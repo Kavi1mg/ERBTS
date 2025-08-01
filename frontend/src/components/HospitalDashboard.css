@@ -1,0 +1,19 @@
+/* src/components/HospitalDashboard.css */
+.hospital-dashboard .card {
+  border-radius: 12px;
+}
+
+.hospital-dashboard .card-header {
+  font-weight: bold;
+}
+
+.hospital-dashboard .map-placeholder {
+  height: 200px;
+  background-color: #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-style: italic;
+  border-radius: 8px;
+}

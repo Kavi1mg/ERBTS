@@ -21,9 +21,15 @@ function Login() {
       });
 
       if (res.data.success) {
-        localStorage.setItem('hospitalId', res.data.hospitalId);
-        navigate('/dashboard');
-      } else {
+  localStorage.setItem('hospitalId', res.data.hospitalId);
+  localStorage.setItem('role', res.data.role);
+
+  if (res.data.role === 'admin') {
+    navigate('/adminPanel');
+  } else {
+    navigate('/HospitalDashboard');
+  }
+} else {
         alert('Invalid credentials');
       }
     } catch (err) {
