@@ -1,0 +1,48 @@
+/* login.css */
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #00b09b, #96c93d); /* Vibrant background */
+}
+
+.login-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 300px;
+}
+.login-background {
+  height: 100vh;
+  background: linear-gradient(to right, #83a4d4, #b6fbff);
+}
+
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+}
+.login-box {
+  background-color: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.login-box input {
+  margin-bottom: 15px;
+}
+
+.login-box button {
+  width: 100%;
+}
