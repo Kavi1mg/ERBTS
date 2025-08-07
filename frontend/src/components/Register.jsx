@@ -4,43 +4,36 @@ import { useNavigate } from 'react-router-dom';
 import './login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function Login() {
+function Register() {
   const [hospitalId, setHospitalId] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('hospital');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3001/api/login', {
+      const res = await axios.post('http://localhost:3001/api/register', {
         role,
         hospitalId,
         password
-        
       });
 
       if (res.data.success) {
-  localStorage.setItem('hospitalId', res.data.hospitalId);
-  localStorage.setItem('role', res.data.role);
-
-  if (res.data.role === 'admin') {
-    navigate('/adminPanel');
-  } else {
-    navigate('/HospitalDashboard');
-  }
-} else {
-        alert('Invalid credentials');
+        alert('✅ Registration successful!');
+        navigate('/'); // redirect to login
+      } else {
+        alert('❌ Registration failed: ' + res.data.error);
       }
     } catch (err) {
-      alert('Error logging in');
+      alert('⚠️ Error registering. Please try again.');
     }
   };
 
   return (
     <div className="login-background d-flex align-items-center justify-content-center">
-      <form className="login-box p-4 rounded shadow" onSubmit={handleLogin}>
-        <h2 className="text-center mb-4">Login</h2>
+      <form className="login-box p-4 rounded shadow" onSubmit={handleRegister}>
+        <h2 className="text-center mb-4">Register</h2>
 
         <select
           className="form-control mb-3"
@@ -69,15 +62,16 @@ function Login() {
           required
         />
 
-        <button className="btn btn-primary w-100" type="submit">
-          Login
+        <button className="btn btn-success w-100" type="submit">
+          Register
         </button>
-         <p className="mt-3 text-center">
-    Don't have an account? <a href="/register">Register here</a>
-  </p>
+
+        <p className="mt-3 text-center">
+          Already have an account? <a href="/">Login</a>
+        </p>
       </form>
     </div>
   );
 }
 
-export default Login;
+export default Register;

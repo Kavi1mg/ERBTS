@@ -27,6 +27,32 @@ db.connect(err => {
 });
 
 // --------------------
+// REGISTER
+// --------------------
+app.post('/api/register', (req, res) => {
+  const { role, hospitalId, password } = req.body;
+
+  // Check if hospitalId already exists
+  const checkQuery = 'SELECT * FROM login WHERE hospitalId = ?';
+  db.query(checkQuery, [hospitalId], (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: 'Database error' });
+
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, error: 'Hospital ID already exists' });
+    }
+
+    // Insert new user
+    const insertQuery = 'INSERT INTO login (role, hospitalId, password) VALUES (?, ?, ?)';
+    db.query(insertQuery, [role, hospitalId, password], (err) => {
+      if (err) return res.status(500).json({ success: false, error: 'Insert failed' });
+
+      res.status(201).json({ success: true, message: 'User registered' });
+    });
+  });
+});
+
+
+// --------------------
 // LOGIN
 // --------------------
 app.post('/api/login', (req, res) => {
