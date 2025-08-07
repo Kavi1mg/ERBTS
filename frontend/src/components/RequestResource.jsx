@@ -22,7 +22,7 @@ const RequestResource = () => {
     e.preventDefault();
 
     try {
-      const hospitalId = localStorage.getItem('hospitalId'); // Get hospitalId stored after login
+      const hospitalId = localStorage.getItem('hospitalId'); 
 
       if (!hospitalId) {
         alert('You must be logged in to submit a request.');

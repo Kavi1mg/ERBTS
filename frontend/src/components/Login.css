@@ -1,48 +1,99 @@
-/* login.css */
-.login-container {
-  height: 100vh;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #00b09b, #96c93d); /* Vibrant background */
-}
-
-.login-form {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  width: 300px;
-}
-.login-background {
   height: 100vh;
-  background: linear-gradient(to right, #83a4d4, #b6fbff);
+  width: 100vw;
+  background: linear-gradient(to bottom, #b3e0ff, #e6f3ff);
+  position: relative;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-.login-box {
-  width: 100%;
-  max-width: 400px;
-  background-color: white;
-}
-.login-box {
-  background-color: white;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 400px;
+
+
+.logo-img {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
 }
 
-.login-box h2 {
-  margin-bottom: 20px;
+
+.umbrella-img {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 450px; /* Try increasing this for extra large */
+  height: auto;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+
+
+.login-container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
-  color: #333;
+  width: 350px;
 }
 
-.login-box input {
-  margin-bottom: 15px;
+
+
+.login-container h2.title {
+  margin-bottom: 25px;
+  color: #003366;
+  font-size: 24px;
 }
 
-.login-box button {
+.login-container input[type="text"],
+.login-container input[type="password"] {
   width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.role-selection {
+  display: flex;
+  justify-content: space-around;
+  margin: 15px 0;
+  font-size: 14px;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2179c4;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background-color: #1d6ab3;
+}
+
+.register-link {
+  margin-top: 15px;
+  color: #003366;
+  cursor: pointer;
+  font-size: 14px;
 }
