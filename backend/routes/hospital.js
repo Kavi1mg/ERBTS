@@ -2,7 +2,7 @@
 router.get('/resources/:hospitalId', async (req, res) => {
   const { hospitalId } = req.params;
   try {
-    const resources = await db.query('SELECT * FROM resources WHERE hospital_id = ?', [hospitalId]);
+    const resources = await db.query('SELECT * FROM resources WHERE hospitalId = ?', [hospitalId]);
     res.json(resources[0]);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch resources' });

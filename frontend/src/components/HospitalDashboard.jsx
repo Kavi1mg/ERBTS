@@ -1,10 +1,10 @@
-// src/components/HospitalDashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './HospitalDashboard.css'; // Custom CSS
+import './HospitalDashboard.css';
 
 function HospitalDashboard() {
   const navigate = useNavigate();
+  const hospitalId = localStorage.getItem('hospitalId');
   const [resources, setResources] = useState([]);
   const [requests, setRequests] = useState([]);
   const [predicted, setPredicted] = useState([]);
@@ -19,18 +19,15 @@ function HospitalDashboard() {
     const role = localStorage.getItem('role');
     if (role !== 'hospital') navigate('/hospital-login');
 
-    // Fetch hospital resources
-    fetch('/api/resources/current')
+    fetch(`/api/resources/${hospitalId}`)
       .then(res => res.json())
       .then(data => setResources(data));
 
-    // Fetch incoming requests
-    fetch('/api/borrow/incoming')
+    fetch(`/api/borrow/${hospitalId}`)
       .then(res => res.json())
       .then(data => setRequests(data));
 
-    // Fetch predictions
-    fetch('/api/predictions/123') // Replace 123 with dynamic hospitalId
+    fetch(`/api/predictions/${hospitalId}`)
       .then(res => res.json())
       .then(data => setPredicted(data));
   }, [navigate]);
@@ -62,9 +59,10 @@ function HospitalDashboard() {
       <h2 className="mb-3">🏥 Hospital Dashboard</h2>
 
       <div className="d-flex justify-content-between mb-3">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          ➕ Raise Borrow Request
-        </button>
+        <button className="btn btn-primary" onClick={() => navigate('/hospital/raise-borrow')}>
+  ➕ Raise Borrow Request
+</button>
+
         <button className="btn btn-danger" onClick={handleLogout}>
           Logout
         </button>
@@ -73,7 +71,11 @@ function HospitalDashboard() {
       <div className="row g-4">
         {/* Current Stock */}
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div
+            className="card shadow-sm"
+            onClick={() => navigate('/hospital-resources')}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="card-header bg-success text-white">📦 Current Resources</div>
             <ul className="list-group list-group-flush">
               {resources.map((res, i) => (
@@ -82,6 +84,9 @@ function HospitalDashboard() {
                 </li>
               ))}
             </ul>
+            <div className="card-footer text-end">
+              <small className="text-primary">View all →</small>
+            </div>
           </div>
         </div>
 
