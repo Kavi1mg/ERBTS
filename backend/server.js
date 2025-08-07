@@ -46,15 +46,14 @@ app.post('/register', (req, res) => {
       return res.status(500).json({ message: 'Error creating login' });
     }
     const hospitalQuery = `
-      INSERT INTO hospital (hospitalId, name, address, pincode, email, phone_number)
+      INSERT INTO hospital (hospitalId, name, address, pincode, email, phone_number,district,state)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
-    db.query(hospitalQuery, [hospital_id, name, address, pincode, email, phone], (err) => {
+    db.query(hospitalQuery, [hospital_id, name, address, pincode, email, phone,district,state], (err) => {
       if (err) {
         console.error('Hospital insert error:', err);
         return res.status(500).json({ message: 'Error creating hospital' });
       }
-
       res.status(200).json({ message: 'Hospital registered successfully' });
     });
   });

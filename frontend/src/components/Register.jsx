@@ -11,8 +11,9 @@ function Register() {
     address: '',
     pincode: '',
     phone: '',
-    email: ''
-    
+    email: '',
+    district:'',
+    state:''
   });
 
   const navigate = useNavigate(); // ✅ Add this
@@ -39,7 +40,8 @@ function Register() {
         pincode: '',
         phone: '',
         email: '',
-
+        district:'',
+        state:''
       });
 
       navigate('/'); // ✅ Go to login ("/" route as per your App.jsx)
@@ -60,6 +62,8 @@ function Register() {
         <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
         <input type="text" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
         <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+        <input type="text" name="district" placeholder="District" value={formData.district} onChange={handleChange} required />
+        <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} required />
         <button type="submit">Register</button>
       </form>
       <p>
