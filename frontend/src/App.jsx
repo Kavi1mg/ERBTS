@@ -5,8 +5,8 @@ import Login from './components/Login';
 import HospitalDashboard from './components/HospitalDashboard';
 import RequestResource from './components/RequestResource'; // we'll create this next
 import HospitalResources from "./components/HospitalResources"; 
-import  RaiseBorrowPage from "./components/RaiseBorrowPage";
 import Register from './components/Register';
+import RaiseBorrowRequest from './components/RaiseBorrowRequest';
 const App = () => {
   return (
     <Router>
@@ -16,7 +16,9 @@ const App = () => {
         <Route path="/HospitalDashboard" element={<HospitalDashboard />} />
         <Route path="/request-resource" element={<RequestResource />} />
         <Route path="/hospital-resources" element={<HospitalResources />} />       
-         <Route path="/hospital/raise-borrow" element={<RaiseBorrowPage />} />
+         
+         <Route path="/hospital/raise-borrow" element={<RaiseBorrowRequest />} />
+
       </Routes>
     </Router>
   );
