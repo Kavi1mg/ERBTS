@@ -1,79 +1,71 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from '../assets/logo.jpg';
-import umbrella from '../assets/umbrella.png';
-
+import './Register.css';
+import { useNavigate, Link } from 'react-router-dom'; 
 
 function Register() {
-  const [hospitalId, setHospitalId] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('hospital');
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    hospital_id: '',
+    password: '',
+    name: '',
+    address: '',
+    pincode: '',
+    phone: '',
+    email: ''
+    
+  });
 
-  const handleRegister = async (e) => {
+  const navigate = useNavigate(); // ✅ Add this
+
+  const handleChange = (e) => {
+    setFormData({ 
+      ...formData,
+      [e.target.name]: e.target.value 
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.post('http://localhost:3001/api/register', {
-        hospitalId,
-        password,
-        role
+      await axios.post('http://localhost:3001/register', formData);
+      alert('Registration successful!');
+     
+      setFormData({
+        hospital_id: '',
+        password: '',
+        name: '',
+        address: '',
+        pincode: '',
+        phone: '',
+        email: '',
+
       });
 
-      if (res.data.success) {
-        alert('Registered successfully');
-        navigate('/login');
-      } else {
-        alert('Registration failed');
-      }
+      navigate('/'); // ✅ Go to login ("/" route as per your App.jsx)
     } catch (err) {
-      alert('Error during registration');
+      console.error(err);
+      alert('Registration failed!');
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-image">
-        <img src={clock} alt="Clock" />
-        <img src={clock} alt="Umbrella" />
-      </div>
-      <form className="login-form" onSubmit={handleRegister}>
-        <img src={logo} alt="Logo" className="login-logo" />
-        <h2>Register</h2>
-
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="form-control"
-        >
-          <option value="admin">Admin</option>
-          <option value="hospital">Hospital</option>
-        </select>
-
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Hospital ID"
-          value={hospitalId}
-          onChange={(e) => setHospitalId(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          className="form-control"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button type="submit" className="btn btn-primary w-100">
-          Register
-        </button>
+    <div className="register-container">
+      <h2>Hospital Registration</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="hospital_id" placeholder="Hospital ID" value={formData.hospital_id} onChange={handleChange} required />
+        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
+        <input type="text" name="name" placeholder="Hospital Name" value={formData.name} onChange={handleChange} required />
+        <textarea name="address" placeholder="Address" value={formData.address} onChange={handleChange} required></textarea>
+        <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required />
+        <input type="text" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
+        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+        <button type="submit">Register</button>
       </form>
+      <p>
+        Already have an account?{' '}
+        <Link to="/" className="login-link">Login</Link> {/* ✅ Goes to login ("/") */}
+      </p>
     </div>
   );
 }

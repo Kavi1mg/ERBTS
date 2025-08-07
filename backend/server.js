@@ -26,35 +26,41 @@ db.connect(err => {
   console.log('✅ Connected to database.');
 });
 
-// --------------------
-// REGISTER
-// --------------------
-app.post('/api/register', (req, res) => {
-  const { role, hospitalId, password } = req.body;
 
-  // Check if hospitalId already exists
-  const checkQuery = 'SELECT * FROM login WHERE hospitalId = ?';
-  db.query(checkQuery, [hospitalId], (err, results) => {
-    if (err) return res.status(500).json({ success: false, error: 'Database error' });
+app.post('/register', (req, res) => {
+  const {
+    hospital_id,
+    password,
+    name,
+    address,
+    pincode,
+    phone, // coming from frontend
+    email
+  } = req.body;
 
-    if (results.length > 0) {
-      return res.status(400).json({ success: false, error: 'Hospital ID already exists' });
+  // Insert into login
+  const loginQuery = 'INSERT INTO login ( role,hospitalId, password) VALUES ("hospital",?, ?)';
+  db.query(loginQuery, [hospital_id, password], (err) => {
+    if (err) {
+      console.error('Login insert error:', err);
+      return res.status(500).json({ message: 'Error creating login' });
     }
+    const hospitalQuery = `
+      INSERT INTO hospital (hospitalId, name, address, pincode, email, phone_number)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    db.query(hospitalQuery, [hospital_id, name, address, pincode, email, phone], (err) => {
+      if (err) {
+        console.error('Hospital insert error:', err);
+        return res.status(500).json({ message: 'Error creating hospital' });
+      }
 
-    // Insert new user
-    const insertQuery = 'INSERT INTO login (role, hospitalId, password) VALUES (?, ?, ?)';
-    db.query(insertQuery, [role, hospitalId, password], (err) => {
-      if (err) return res.status(500).json({ success: false, error: 'Insert failed' });
-
-      res.status(201).json({ success: true, message: 'User registered' });
+      res.status(200).json({ message: 'Hospital registered successfully' });
     });
   });
 });
 
 
-// --------------------
-// LOGIN
-// --------------------
 app.post('/api/login', (req, res) => {
   const { role, hospitalId, password } = req.body;
 
@@ -74,90 +80,90 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// --------------------
-// GET CURRENT HOSPITAL RESOURCES
-// --------------------
-app.get('/api/resources/:hospitalId', (req, res) => {
-  const { hospitalId } = req.params;
+// // --------------------
+// // GET CURRENT HOSPITAL RESOURCES
+// // --------------------
+// app.get('/api/resources/:hospitalId', (req, res) => {
+//   const { hospitalId } = req.params;
 
-  const query = 'SELECT type, available FROM available_resources WHERE hospitalId = ?';
-  db.query(query, [hospitalId], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Server error' });
+//   const query = 'SELECT type, available FROM available_resources WHERE hospitalId = ?';
+//   db.query(query, [hospitalId], (err, results) => {
+//     if (err) return res.status(500).json({ error: 'Server error' });
 
-    res.json(results);
-  });
-});
+//     res.json(results);
+//   });
+// });
 
-// --------------------
-// GET NEARBY HOSPITALS (by geo)
-// --------------------
-app.get('/api/nearby/:hospitalId', (req, res) => {
-  const { hospitalId } = req.params;
-  const radiusKm = 10;
+// // --------------------
+// // GET NEARBY HOSPITALS (by geo)
+// // --------------------
+// app.get('/api/nearby/:hospitalId', (req, res) => {
+//   const { hospitalId } = req.params;
+//   const radiusKm = 10;
 
-  const getCoordsQuery = 'SELECT latitude, longitude FROM hospital_location WHERE hospitalId = ?';
-  db.query(getCoordsQuery, [hospitalId], (err, results) => {
-    if (err || results.length === 0) return res.status(500).json({ error: 'Hospital not found' });
+//   const getCoordsQuery = 'SELECT latitude, longitude FROM hospital_location WHERE hospitalId = ?';
+//   db.query(getCoordsQuery, [hospitalId], (err, results) => {
+//     if (err || results.length === 0) return res.status(500).json({ error: 'Hospital not found' });
 
-    const { latitude, longitude } = results[0];
+//     const { latitude, longitude } = results[0];
 
-    const nearbyQuery = `
-      SELECT *, (
-        6371 * acos(
-          cos(radians(?)) * cos(radians(latitude)) *
-          cos(radians(longitude) - radians(?)) +
-          sin(radians(?)) * sin(radians(latitude))
-        )
-      ) AS distance
-      FROM hospital_location
-      WHERE hospitalId != ?
-      HAVING distance < ?
-      ORDER BY distance ASC
-    `;
+//     const nearbyQuery = `
+//       SELECT *, (
+//         6371 * acos(
+//           cos(radians(?)) * cos(radians(latitude)) *
+//           cos(radians(longitude) - radians(?)) +
+//           sin(radians(?)) * sin(radians(latitude))
+//         )
+//       ) AS distance
+//       FROM hospital_location
+//       WHERE hospitalId != ?
+//       HAVING distance < ?
+//       ORDER BY distance ASC
+//     `;
 
-    db.query(
-      nearbyQuery,
-      [latitude, longitude, latitude, hospitalId, radiusKm],
-      (err, hospitals) => {
-        if (err) return res.status(500).json({ error: 'Nearby search failed' });
-        res.json({ nearbyHospitals: hospitals });
-      }
-    );
-  });
-});
+//     db.query(
+//       nearbyQuery,
+//       [latitude, longitude, latitude, hospitalId, radiusKm],
+//       (err, hospitals) => {
+//         if (err) return res.status(500).json({ error: 'Nearby search failed' });
+//         res.json({ nearbyHospitals: hospitals });
+//       }
+//     );
+//   });
+// });
 
-// --------------------
-// CREATE BORROW REQUEST
-// --------------------
-app.post('/api/request', (req, res) => {
-  const { fromHospitalId, toHospitalId, resourceType, quantity } = req.body;
+// // --------------------
+// // CREATE BORROW REQUEST
+// // --------------------
+// app.post('/api/request', (req, res) => {
+//   const { fromHospitalId, toHospitalId, resourceType, quantity } = req.body;
 
-  const query = `
-    INSERT INTO borrow_requests (fromHospitalId, toHospitalId, resourceType, quantity)
-    VALUES (?, ?, ?, ?)
-  `;
+//   const query = `
+//     INSERT INTO borrow_requests (fromHospitalId, toHospitalId, resourceType, quantity)
+//     VALUES (?, ?, ?, ?)
+//   `;
 
-  db.query(query, [fromHospitalId, toHospitalId, resourceType, quantity], err => {
-    if (err) return res.status(500).json({ error: 'Failed to create request' });
+//   db.query(query, [fromHospitalId, toHospitalId, resourceType, quantity], err => {
+//     if (err) return res.status(500).json({ error: 'Failed to create request' });
 
-    res.status(201).json({ message: 'Request sent successfully' });
-  });
-});
+//     res.status(201).json({ message: 'Request sent successfully' });
+//   });
+// });
 
-// --------------------
-// RESPOND TO REQUEST (Accept/Reject)
-// --------------------
-app.post('/api/request/:requestId/respond', (req, res) => {
-  const { requestId } = req.params;
-  const { status } = req.body;
+// // --------------------
+// // RESPOND TO REQUEST (Accept/Reject)
+// // --------------------
+// app.post('/api/request/:requestId/respond', (req, res) => {
+//   const { requestId } = req.params;
+//   const { status } = req.body;
 
-  const query = 'UPDATE borrow_requests SET status = ? WHERE requestId = ?';
-  db.query(query, [status, requestId], err => {
-    if (err) return res.status(500).json({ error: 'Failed to update status' });
+//   const query = 'UPDATE borrow_requests SET status = ? WHERE requestId = ?';
+//   db.query(query, [status, requestId], err => {
+//     if (err) return res.status(500).json({ error: 'Failed to update status' });
 
-    res.json({ message: 'Request updated' });
-  });
-});
+//     res.json({ message: 'Request updated' });
+//   });
+// });
 
 // --------------------
 // START SERVER
