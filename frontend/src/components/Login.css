@@ -10,7 +10,7 @@ body {
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(to bottom, #b3e0ff, #e6f3ff);
+  background: linear-gradient(to bottom, #2b88ec, #00c6ff);
   position: relative;
   margin: 0;
   padding: 0;
@@ -21,7 +21,7 @@ body {
 
 .logo-img {
   position: absolute;
-  top: 40px;
+  top: 100px; /* ⬅️ Increased from 30px to 40px */
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
@@ -31,15 +31,13 @@ body {
 
 .umbrella-img {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 450px; /* Try increasing this for extra large */
+  bottom: -3px;
+  left: 50px; /* ⬅️ Moved slightly to the right */
+  width: 400px;
   height: auto;
   opacity: 0.9;
   z-index: 1;
 }
-
-
 
 .login-container {
   background-color: white;
@@ -97,3 +95,4 @@ body {
   cursor: pointer;
   font-size: 14px;
 }
+
