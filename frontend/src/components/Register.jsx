@@ -68,7 +68,7 @@ function Register() {
       </form>
       <p>
         Already have an account?{' '}
-        <Link to="/" className="login-link">Login</Link> {/* ✅ Goes to login ("/") */}
+        <Link to="/" className="login-link">Login</Link> 
       </p>
     </div>
   );

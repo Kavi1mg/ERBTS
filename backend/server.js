@@ -14,7 +14,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Narmada*09',
+  password: 'KAVI@123mg',
   database: 'erbts'
 });
 
@@ -35,7 +35,9 @@ app.post('/register', (req, res) => {
     address,
     pincode,
     phone, // coming from frontend
-    email
+    email,
+    district,
+    state
   } = req.body;
 
   // Insert into login
@@ -79,94 +81,97 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// // --------------------
-// // GET CURRENT HOSPITAL RESOURCES
-// // --------------------
-// app.get('/api/resources/:hospitalId', (req, res) => {
-//   const { hospitalId } = req.params;
+app.get('/api/resources/:hospitalId', async (req,res)=>{
+  const { hospitalId } = req.params;
+  const [rows] = await pool.query(
+    'SELECT type, available AS quantity FROM available_resources WHERE hospitalId = ?',
+    [hospitalId]
+  );
+  res.json(rows);
+});
 
-//   const query = 'SELECT type, available FROM available_resources WHERE hospitalId = ?';
-//   db.query(query, [hospitalId], (err, results) => {
-//     if (err) return res.status(500).json({ error: 'Server error' });
+/* GET borrow requests (incoming to hospital) */
+app.get('/api/borrow/:hospitalId', async (req,res)=>{
+  const { hospitalId } = req.params;
+  const [rows] = await pool.query(
+    `SELECT id, fromHospitalId AS fromHospital, resourceType AS type, quantity, reason, status 
+     FROM borrow_requests WHERE toHospitalId = ? ORDER BY requestedAt DESC`,
+    [hospitalId]
+  );
+  res.json(rows);
+});
 
-//     res.json(results);
-//   });
-// });
+/* POST create borrow request */
+app.post('/api/borrow/request', async (req,res)=>{
+  const { fromHospitalId, resourceType, quantity, reason } = req.body;
+  // simple auto-match: pick a donor with available >= qty (exclude requester)
+  const [donors] = await pool.query(
+    `SELECT hospitalId FROM available_resources WHERE type=? AND available >= ? AND hospitalId != ? ORDER BY available DESC LIMIT 1`,
+    [resourceType, quantity, fromHospitalId]
+  );
+  const toHospitalId = donors.length ? donors[0].hospitalId : 'A001';
+  const [result] = await pool.query(
+    'INSERT INTO borrow_requests (fromHospitalId, toHospitalId, resourceType, quantity, reason) VALUES (?,?,?,?,?)',
+    [fromHospitalId, toHospitalId, resourceType, quantity, reason]
+  );
+  res.json({ status: 'ok', requestId: result.insertId, toHospitalId });
+});
 
-// // --------------------
-// // GET NEARBY HOSPITALS (by geo)
-// // --------------------
-// app.get('/api/nearby/:hospitalId', (req, res) => {
-//   const { hospitalId } = req.params;
-//   const radiusKm = 10;
+/* POST accept borrow request */
+app.post('/api/borrow/accept/:id', async (req,res)=>{
+  const requestId = req.params.id;
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const [[reqRow]] = await conn.query('SELECT * FROM borrow_requests WHERE id = ?', [requestId]);
+    if(!reqRow) throw new Error('Request not found');
 
-//   const getCoordsQuery = 'SELECT latitude, longitude FROM hospital_location WHERE hospitalId = ?';
-//   db.query(getCoordsQuery, [hospitalId], (err, results) => {
-//     if (err || results.length === 0) return res.status(500).json({ error: 'Hospital not found' });
+    // update status
+    await conn.query('UPDATE borrow_requests SET status = "approved" WHERE id = ?', [requestId]);
 
-//     const { latitude, longitude } = results[0];
+    // create transfer
+    await conn.query('INSERT INTO transfers (requestId, fromHospitalId, toHospitalId, resourceType, quantity) VALUES (?,?,?,?,?)',
+      [requestId, reqRow.fromHospitalId, reqRow.toHospitalId, reqRow.resourceType, reqRow.quantity]);
 
-//     const nearbyQuery = `
-//       SELECT *, (
-//         6371 * acos(
-//           cos(radians(?)) * cos(radians(latitude)) *
-//           cos(radians(longitude) - radians(?)) +
-//           sin(radians(?)) * sin(radians(latitude))
-//         )
-//       ) AS distance
-//       FROM hospital_location
-//       WHERE hospitalId != ?
-//       HAVING distance < ?
-//       ORDER BY distance ASC
-//     `;
+    // decrement donor available (fromHospitalId) and increment receiver
+    await conn.query('UPDATE available_resources SET available = available - ? WHERE hospitalId = ? AND type = ?',
+      [reqRow.quantity, reqRow.fromHospitalId, reqRow.resourceType]);
 
-//     db.query(
-//       nearbyQuery,
-//       [latitude, longitude, latitude, hospitalId, radiusKm],
-//       (err, hospitals) => {
-//         if (err) return res.status(500).json({ error: 'Nearby search failed' });
-//         res.json({ nearbyHospitals: hospitals });
-//       }
-//     );
-//   });
-// });
+    // ensure receiver row exists - if not, insert
+    const [recv] = await conn.query('SELECT * FROM available_resources WHERE hospitalId = ? AND type = ?',
+      [reqRow.toHospitalId, reqRow.resourceType]);
+    if(recv.length) {
+      await conn.query('UPDATE available_resources SET available = available + ? WHERE hospitalId = ? AND type = ?',
+        [reqRow.quantity, reqRow.toHospitalId, reqRow.resourceType]);
+    } else {
+      await conn.query('INSERT INTO available_resources (hospitalId, type, available) VALUES (?,?,?)',
+        [reqRow.toHospitalId, reqRow.resourceType, reqRow.quantity]);
+    }
+    await conn.commit();
+    res.json({status:'ok'});
+  } catch (e) {
+    await conn.rollback();
+    res.status(500).json({ error: e.message });
+  } finally {
+    conn.release();
+  }
+});
 
-// // --------------------
-// // CREATE BORROW REQUEST
-// // --------------------
-// app.post('/api/request', (req, res) => {
-//   const { fromHospitalId, toHospitalId, resourceType, quantity } = req.body;
+/* POST reject borrow request */
+app.post('/api/borrow/reject/:id', async (req,res)=>{
+  const requestId = req.params.id;
+  await pool.query('UPDATE borrow_requests SET status = "rejected" WHERE id = ?', [requestId]);
+  res.json({status:'ok'});
+});
 
-//   const query = `
-//     INSERT INTO borrow_requests (fromHospitalId, toHospitalId, resourceType, quantity)
-//     VALUES (?, ?, ?, ?)
-//   `;
+/* GET predictions: backend will forward to ML microservice (later) */
+app.get('/api/predictions/:hospitalId', async (req,res)=>{
+  // For now return placeholder or integrate ML after step 6
+  const { hospitalId } = req.params;
+  // simple static placeholder:
+  res.json([{ type:'Oxygen Cylinders', predicted_quantity: 3 }, { type:'Ventilators', predicted_quantity:1 }]);
+});
 
-//   db.query(query, [fromHospitalId, toHospitalId, resourceType, quantity], err => {
-//     if (err) return res.status(500).json({ error: 'Failed to create request' });
-
-//     res.status(201).json({ message: 'Request sent successfully' });
-//   });
-// });
-
-// // --------------------
-// // RESPOND TO REQUEST (Accept/Reject)
-// // --------------------
-// app.post('/api/request/:requestId/respond', (req, res) => {
-//   const { requestId } = req.params;
-//   const { status } = req.body;
-
-//   const query = 'UPDATE borrow_requests SET status = ? WHERE requestId = ?';
-//   db.query(query, [status, requestId], err => {
-//     if (err) return res.status(500).json({ error: 'Failed to update status' });
-
-//     res.json({ message: 'Request updated' });
-//   });
-// });
-
-// --------------------
-// START SERVER
-// --------------------
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
 });
