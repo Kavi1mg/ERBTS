@@ -50,7 +50,6 @@ function Login() {
           <option value="admin">Admin</option>
           <option value="hospital">Hospital</option>
         </select>
-
         <input
           type="text"
           className="form-control mb-3"

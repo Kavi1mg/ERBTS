@@ -91,10 +91,12 @@ function HospitalDashboard() {
       <h2 className="mb-3">🏥 Hospital Dashboard</h2>
 
       <div className="d-flex justify-content-between mb-3">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          ➕ Raise Borrow Request
-        </button>
-
+       <button
+  className="btn btn-primary"
+  onClick={() => navigate("/hospital-list")}
+>
+  ➕ Raise Borrow Request
+</button>
         <button className="btn btn-danger" onClick={handleLogout}>
           Logout
         </button>
