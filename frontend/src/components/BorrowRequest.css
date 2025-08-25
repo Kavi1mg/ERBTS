@@ -1,0 +1,172 @@
+.borrow-request-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* horizontal centering */
+  justify-content: center;   /* vertical centering */
+  background: linear-gradient(135deg, #0062ff, #00d4ff);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Back icon */
+.back-icon {
+  font-size: 28px;
+  color: #ffffff;
+  cursor: pointer;
+  margin-bottom: 25px;
+  transition: 0.2s;
+}
+.back-icon:hover {
+  color: #93c5fd;
+  transform: scale(1.1);
+}
+
+/* Page title */
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 25px;
+}
+
+/* Make Request button */
+.make-request-btn {
+  padding: 12px 22px;
+  margin-bottom: 25px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.make-request-btn:hover {
+  background: #1e40af;
+}
+
+/* Request form */
+.request-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  margin-bottom: 30px;
+  justify-content: center;
+  text-align: center;
+}
+.request-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: #1e3a8a;
+}
+.request-form select,
+.request-form input {
+  padding: 10px;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 5px;
+  width: 200px;
+}
+.submit-btn {
+  padding: 12px 18px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.submit-btn:hover {
+  background: #1e40af;
+}
+
+/* Tables */
+.request-table,
+.hospital-table {
+  width: 90%;
+  max-width: 1200px;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  margin-bottom: 30px;
+  background: #ffffff;
+}
+.request-table thead,
+.hospital-table thead {
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+}
+.request-table th,
+.hospital-table th,
+.request-table td,
+.hospital-table td {
+  padding: 14px;
+  font-size: 14px;
+  text-align: center;
+  color: #1e3a8a;
+  border-bottom: 1px solid #cbd5e1;
+}
+.request-table tbody tr:hover,
+.hospital-table tbody tr:hover {
+  background: #dbeafe;
+}
+
+/* Urgency & Status in blue shades */
+.urgency.low, .status.approved { color: #3b82f6; font-weight: 600; }
+.urgency.medium, .status.pending { color: #2563eb; font-weight: 600; }
+.urgency.high, .status.rejected { color: #1e40af; font-weight: 600; }
+
+/* Buttons inside tables */
+.btn-return,
+.btn-borrow {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.btn-return {
+  background: #2563eb;
+  color: white;
+}
+.btn-return:hover {
+  background: #1e40af;
+}
+.btn-borrow {
+  background: #3b82f6;
+  color: white;
+}
+.btn-borrow:hover {
+  background: #1e40af;
+}
+
+/* Hospital List title */
+.hospital-list h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Center all forms & tables */
+.request-table,
+.hospital-table,
+.request-form {
+  margin-left: auto;
+  margin-right: auto;
+}

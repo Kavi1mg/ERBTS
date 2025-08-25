@@ -1,195 +1,87 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HospitalDashboard.css';
+import logo from '../assets/logo.png'; // ✅ correct import
+import { FaInbox, FaExchangeAlt, FaBox, FaHospital, FaChartLine, FaTools } from 'react-icons/fa';
 
 function HospitalDashboard() {
   const navigate = useNavigate();
-  const hospitalId = localStorage.getItem('hospitalId');
-  const [resources, setResources] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [predicted, setPredicted] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    type: '',
-    quantity: '',
-    reason: '',
-  });
+  const [showProfile, setShowProfile] = useState(false);
 
-  useEffect(() => {
-    const role = localStorage.getItem('role');
-    if (role !== 'hospital') navigate('/hospital-login');
-
-    fetch(`/api/resources/${hospitalId}`)
-      .then(res => res.json())
-      .then(data => setResources(data));
-
-    fetch(`/api/borrow/${hospitalId}`)
-      .then(res => res.json())
-      .then(data => setRequests(data));
-
-    fetch(`/api/predictions/${hospitalId}`)
-      .then(res => res.json())
-      .then(data => setPredicted(data));
-  }, [navigate]);
+  const hospitalId = localStorage.getItem('hospital_id');
+  const name = localStorage.getItem('name');
+  const address = localStorage.getItem('address');
+  const district = localStorage.getItem('district');
+  const state = localStorage.getItem('state');
+  const pincode = localStorage.getItem('pincode');
+  const phone = localStorage.getItem('phone');
+  const email = localStorage.getItem('email');
+  const role = localStorage.getItem('role');
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/hospital-login');
+    alert("Thanks for logging in! See you soon.");
+    navigate("/");
   };
 
-  const handleInputChange = e =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmitRequest = e => {
-    e.preventDefault();
-    fetch('/api/borrow/request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then(res => res.json())
-      .then(() => {
-        alert('Request submitted');
-        setShowModal(false);
-      });
-  };
+  const cards = [
+    { title: "Incoming Requests", icon: <FaInbox />, path: "/incoming-borrow-request" },
+    { title: "Borrow Request", icon: <FaExchangeAlt />, path: "/borrow-request" },
+    { title: "Current Resources", icon: <FaBox />, path: "/hospital-resources" },
+    { title: "Nearby Hospitals", icon: <FaHospital />, path: "/nearby-hospitals" },
+    { title: "LSTM Prediction", icon: <FaChartLine />, path: "/predictions" },
+    { title: "Equipment Condition", icon: <FaTools />, path: "/equipment-tracking" },
+  ];
 
   return (
-    <div className="container hospital-dashboard mt-4">
-      <h2 className="mb-3">🏥 Hospital Dashboard</h2>
-
-      <div className="d-flex justify-content-between mb-3">
-        <button className="btn btn-primary" onClick={() => navigate('/hospital/raise-borrow')}>
-  ➕ Raise Borrow Request
-</button>
-
-        <button className="btn btn-danger" onClick={handleLogout}>
-          Logout
-        </button>
+    <div className="hospital-dashboard">
+      {/* Logo top-left */}
+      <div className="logo-section">
+        <img src={logo} alt="Logo" className="logo" /> {/* ✅ fixed here */}
       </div>
 
-      <div className="row g-4">
-        {/* Current Stock */}
-        <div className="col-md-6">
-          <div
-            className="card shadow-sm"
-            onClick={() => navigate('/hospital-resources')}
-            style={{ cursor: 'pointer' }}
+      {/* Profile Section */}
+      <div className="profile-section">
+        <div className="profile-icon" onClick={() => setShowProfile(!showProfile)}>👤</div>
+        {showProfile && (
+          <div className="profile-dropdown">
+            <p><strong>ID:</strong> {hospitalId}</p>
+            <p><strong>Name:</strong> {name}</p>
+            <p><strong>Address:</strong> {address}</p>
+            <p><strong>District:</strong> {district}</p>
+            <p><strong>State:</strong> {state}</p>
+            <p><strong>Pincode:</strong> {pincode}</p>
+            <p><strong>Phone:</strong> {phone}</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Role:</strong> {role}</p>
+            <button className="btn btn-danger btn-sm mt-2" onClick={handleLogout}>Logout</button>
+          </div>
+        )}
+      </div>
+
+      {/* Title */}
+      <h2 className="mb-4">Hospital Dashboard</h2>
+
+      {/* Dashboard Grid */}
+      <div className="dashboard-grid">
+        {cards.map((card, i) => (
+          <div 
+            key={i} 
+            className="card shadow-sm dashboard-card" 
+            onClick={() => navigate(card.path)}
           >
-            <div className="card-header bg-success text-white">📦 Current Resources</div>
-            <ul className="list-group list-group-flush">
-              {resources.map((res, i) => (
-                <li className="list-group-item" key={i}>
-                  {res.type}: <strong>{res.quantity}</strong>
-                </li>
-              ))}
-            </ul>
-            <div className="card-footer text-end">
-              <small className="text-primary">View all →</small>
+            <div className="card-body d-flex flex-column align-items-center justify-content-center">
+              <div className="card-icon">{card.icon}</div>
+              <h5 className="card-title mt-2">{card.title}</h5>
             </div>
           </div>
-        </div>
-
-        {/* Predicted Demand */}
-        <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-header bg-info text-white">📈 Predicted Demand</div>
-            <ul className="list-group list-group-flush">
-              {predicted.map((item, i) => (
-                <li className="list-group-item" key={i}>
-                  {item.type}: <strong>{item.predicted_quantity}</strong>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Incoming Borrow Requests */}
-        <div className="col-md-12">
-          <div className="card shadow-sm">
-            <div className="card-header bg-warning">📬 Incoming Borrow Requests</div>
-            <ul className="list-group list-group-flush">
-              {requests.map((req, i) => (
-                <li className="list-group-item d-flex justify-content-between" key={i}>
-                  <span>
-                    {req.fromHospital} requests <strong>{req.quantity}</strong> of{' '}
-                    {req.type} due to: <em>{req.reason}</em>
-                  </span>
-                  <div>
-                    <button className="btn btn-sm btn-success me-2">Accept</button>
-                    <button className="btn btn-sm btn-danger">Reject</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Map View */}
-        <div className="col-md-12">
-          <div className="card shadow-sm">
-            <div className="card-header bg-secondary text-white">🗺️ Nearby Hospitals (Map View)</div>
-            <div className="card-body">
-              <div className="map-placeholder">Google Map goes here</div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="modal show d-block" tabIndex="-1">
-          <div className="modal-dialog">
-            <form className="modal-content" onSubmit={handleSubmitRequest}>
-              <div className="modal-header">
-                <h5 className="modal-title">Raise Borrow Request</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <label>Type:</label>
-                <select
-                  name="type"
-                  className="form-select mb-2"
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select</option>
-                  <option value="Oxygen">Oxygen</option>
-                  <option value="Ventilator">Ventilator</option>
-                  <option value="Bed">Bed</option>
-                </select>
-                <label>Quantity:</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  className="form-control mb-2"
-                  onChange={handleInputChange}
-                  required
-                />
-                <label>Reason:</label>
-                <textarea
-                  name="reason"
-                  className="form-control"
-                  onChange={handleInputChange}
-                  required
-                ></textarea>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Submit Request
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Footer */}
+      <footer className="dashboard-footer">
+        <p>© ERBTS</p>
+      </footer>
     </div>
   );
 }

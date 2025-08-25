@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Register.css';
-import { useNavigate, Link } from 'react-router-dom'; 
-import './Login.css'; // reused styles for logo & umbrella
+import './Login.css'; // reuse styles for logo & umbrella
+import { useNavigate, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../assets/logo.png';
 import umbrella from '../assets/umbrella.png';
@@ -31,7 +31,6 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       await axios.post('http://localhost:3001/register', formData);
       alert('Registration successful!');
@@ -55,9 +54,13 @@ function Register() {
 
   return (
     <div className="register-page">
-      <img src={umbrella} alt="umbrella" className="umbrella-img" />
-      <img src={logo} alt="logo" className="logo-img" />
+      {/* Logo */}
+      <img src={logo} alt="Logo" className="logo-img" />
 
+      {/* Umbrella */}
+      <img src={umbrella} alt="Umbrella" className="umbrella-img" />
+
+      {/* Form Container */}
       <div className="register-container">
         <h2>Hospital Registration</h2>
         <form onSubmit={handleSubmit}>
