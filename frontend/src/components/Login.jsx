@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import logo from '../assets/logo.png';
+import umbrella from '../assets/umbrella.png';
 
 function Login() {
   const [hospitalId, setHospitalId] = useState('');
@@ -17,19 +19,18 @@ function Login() {
         role,
         hospitalId,
         password
-        
       });
 
       if (res.data.success) {
-  localStorage.setItem('hospitalId', res.data.hospitalId);
-  localStorage.setItem('role', res.data.role);
+        localStorage.setItem('hospitalId', res.data.hospitalId);
+        localStorage.setItem('role', res.data.role);
 
-  if (res.data.role === 'admin') {
-    navigate('/adminPanel');
-  } else {
-    navigate('/HospitalDashboard');
-  }
-} else {
+        if (res.data.role === 'admin') {
+          navigate('/adminPanel');
+        } else {
+          navigate('/HospitalDashboard');
+        }
+      } else {
         alert('Invalid credentials');
       }
     } catch (err) {
@@ -38,43 +39,61 @@ function Login() {
   };
 
   return (
-    <div className="login-background d-flex align-items-center justify-content-center">
-      <form className="login-box p-4 rounded shadow" onSubmit={handleLogin}>
-        <h2 className="text-center mb-4">Login</h2>
+    <div className="login-page">
+      <img src={logo} alt="logo" className="logo-img" />
+      <img src={umbrella} alt="umbrella" className="umbrella-img" />
 
-        <select
-          className="form-control mb-3"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
+      <div className="login-container">
+        <h2 className="title">Login</h2>
+
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="User ID"
+            value={hospitalId}
+            onChange={(e) => setHospitalId(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <div className="role-selection">
+            <label>
+              <input
+                type="radio"
+                value="admin"
+                checked={role === 'admin'}
+                onChange={() => setRole('admin')}
+              />
+              Admin
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="hospital"
+                checked={role === 'hospital'}
+                onChange={() => setRole('hospital')}
+              />
+              Hospital Staff
+            </label>
+          </div>
+
+          <button type="submit">Login</button>
+        </form>
+
+        <p
+          className="register-link"
+          onClick={() => navigate('/register')}
         >
-          <option value="admin">Admin</option>
-          <option value="hospital">Hospital</option>
-        </select>
-        <input
-          type="text"
-          className="form-control mb-3"
-          placeholder="User ID"
-          value={hospitalId}
-          onChange={(e) => setHospitalId(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          className="form-control mb-3"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button className="btn btn-primary w-100" type="submit">
-          Login
-        </button>
-         <p className="mt-3 text-center">
-    Don't have an account? <a href="/register">Register here</a>
-  </p>
-      </form>
+          Register
+        </p>
+      </div>
     </div>
   );
 }

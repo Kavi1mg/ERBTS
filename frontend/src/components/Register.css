@@ -1,47 +1,114 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: sans-serif;
+}
+
+/* Full-page blue gradient background */
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to bottom, #2b88ec, #00c6ff);
+  position: relative;
+  padding-top: 80px; /* ⬅️ Reduced from 120px */
+  overflow: hidden;
+}
+
+
+.logo-img {
+  position: absolute;
+  top: 5px; /* ⬅️ Reduced from 40px */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  z-index: 2;
+}
+
+
+/* Umbrella Image */
+.umbrella-img {
+  position: absolute;
+  bottom: -3px;;
+  left: 0;
+  width: 400px; /* ⬅️ Increased from 300px */
+  height: auto;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+
+/* Container */
 .register-container {
-  width: 400px;
-  margin: 50px auto;
-  padding: 25px;
-  background: #f4f4f4;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background-color: white;
+  padding: 20px 30px; /* ⬅️ Reduced padding */
+  border-radius: 20px;
+  width: 85%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 30px; /* ⬅️ Push container upward from bottom */
 }
 
+/* Title */
 .register-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 16px;
+  font-size: 22px;
 }
 
+/* Form */
 .register-container form {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  width: 100%;
 }
 
 .register-container input,
-.register-container textarea {
-  padding: 10px;
-  margin-bottom: 12px;
+.register-container textarea,
+.register-container select {
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 5px;
   font-size: 14px;
+  width: 100%;
 }
 
-.register-container textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
+/* Button */
 .register-container button {
   padding: 10px;
-  background-color: #007bff;
+  border-radius: 6px;
+  background-color: #2179c4;
   color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 8px;
 }
 
 .register-container button:hover {
-  background-color: #0056b3;
+  background-color: #1d6ab3;
+}
+
+/* Link */
+.register-container .login-link {
+  margin-top: 12px;
+  color: #003366;
+  text-decoration: none;
+  font-size: 13px;
 }
