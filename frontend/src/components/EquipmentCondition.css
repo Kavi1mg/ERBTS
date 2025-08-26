@@ -1,14 +1,29 @@
 .equipment-condition-page {
-  min-height: 100vh;
   width: 100vw;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
-  box-sizing: border-box;
-  padding: 40px 20px;
+  text-align: center;
+  z-index: 0;
+}
+/* Back icon fixed at top-left */
+.back-icon {
+  font-size: 28px;
+  color: #e3e7f1;
+  cursor: pointer;
+  transition: 0.2s;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+.back-icon:hover {
+  color: #1e40af;
+  transform: scale(1.1);
 }
 
 /* Page title */
@@ -26,35 +41,59 @@
   width: 90%;
   max-width: 1200px;
   border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
+  background: white;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  font-size: 14px;
-  color: #fff;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  margin: 0 auto;
+  text-align: center;
 }
 
 .equipment-table thead {
-  background: rgba(255, 255, 255, 0.25);
-  color: #fff;
+  background: #3b82f6;
+  color: white;
+  border-bottom: 3px solid #2563eb;
 }
 
 .equipment-table th {
   padding: 14px;
-  text-align: left;
   font-size: 15px;
-  font-weight: 600;
+  text-align: center;
+  color: #fcfcfd;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  user-select: none;
 }
 
 .equipment-table td {
-  padding: 14px;
+  padding: 12px;
   font-size: 14px;
-  color: #fff;
+  text-align: center;
+  color: #1e3a8a;
 }
 
 .equipment-table tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.08);
+  background: #f0f9ff;
+}
+
+/* Filter Input */
+.filter-input {
+  width: 90%;
+  max-width: 500px;
+  padding: 10px 14px;
+  border: 1px solid #60a5fa;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
+  transition: 0.2s;
+  text-align: center;
+  margin: 0 auto 30px auto;
+}
+
+.filter-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 /* Borrow button styling */

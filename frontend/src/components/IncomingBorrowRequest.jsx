@@ -7,6 +7,7 @@ const IncomingBorrowRequest = () => {
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [search, setSearch] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   useEffect(() => {
     fetch("http://localhost:5000/api/incoming_requests")
@@ -21,16 +22,57 @@ const IncomingBorrowRequest = () => {
     )
   );
 
+  const sortedRequests = React.useMemo(() => {
+    if (sortConfig.key) {
+      const sorted = [...filteredRequests].sort((a, b) => {
+        let aVal = a[sortConfig.key];
+        let bVal = b[sortConfig.key];
+
+        if (aVal === null) return 1;
+        if (bVal === null) return -1;
+
+        // Handle possible string or number values
+        if (typeof aVal === "string") {
+          return sortConfig.direction === "asc"
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        } else {
+          return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
+        }
+      });
+      return sorted;
+    }
+    return filteredRequests;
+  }, [filteredRequests, sortConfig]);
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
   const handleInputChange = (idx, field, value) => {
     const newRequests = [...requests];
     newRequests[idx][field] = value;
     setRequests(newRequests);
   };
 
+  const getSortIndicator = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "asc" ? " ▲" : " ▼";
+    }
+    return "";
+  };
+
   return (
     <div className="incoming-requests-page">
       <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
-      <h2>Incoming Borrow Requests</h2>
+
+      <header className="page-header">
+        <h1>Incoming Borrow Requests</h1>
+      </header>
 
       <input
         type="text"
@@ -43,22 +85,44 @@ const IncomingBorrowRequest = () => {
       <table className="request-table">
         <thead>
           <tr>
-            <th>S.No</th>
-            <th>Hospital Name</th>
-            <th>Resource Type</th>
-            <th>Quantity</th>
-            <th>Urgency Level</th>
-            <th>Requested At</th>
-            <th>Updated At</th>
-            <th>Status / Action</th>
-            <th>Due Date</th>
-            <th>Returned At</th>
-            <th>Return Status</th>
+            <th onClick={() => requestSort("request_id")}>
+              S.No{getSortIndicator("request_id")}
+            </th>
+            <th onClick={() => requestSort("hospital_name")}>
+              Hospital Name{getSortIndicator("hospital_name")}
+            </th>
+            <th onClick={() => requestSort("resource_type")}>
+              Resource Type{getSortIndicator("resource_type")}
+            </th>
+            <th onClick={() => requestSort("quantity")}>
+              Quantity{getSortIndicator("quantity")}
+            </th>
+            <th onClick={() => requestSort("urgency_level")}>
+              Urgency Level{getSortIndicator("urgency_level")}
+            </th>
+            <th onClick={() => requestSort("requested_at")}>
+              Requested At{getSortIndicator("requested_at")}
+            </th>
+            <th onClick={() => requestSort("updated_at")}>
+              Updated At{getSortIndicator("updated_at")}
+            </th>
+            <th onClick={() => requestSort("status")}>
+              Status / Action{getSortIndicator("status")}
+            </th>
+            <th onClick={() => requestSort("due_date")}>
+              Due Date{getSortIndicator("due_date")}
+            </th>
+            <th onClick={() => requestSort("returned_at")}>
+              Returned At{getSortIndicator("returned_at")}
+            </th>
+            <th onClick={() => requestSort("return_status")}>
+              Return Status{getSortIndicator("return_status")}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {filteredRequests.length > 0 ? (
-            filteredRequests.map((req, idx) => (
+          {sortedRequests.length > 0 ? (
+            sortedRequests.map((req, idx) => (
               <tr key={req.request_id}>
                 <td>{idx + 1}</td>
                 <td>{req.hospital_name}</td>

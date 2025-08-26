@@ -1,22 +1,24 @@
 .borrow-request-page {
+  width: 100vw;
   min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;       /* horizontal centering */
-  justify-content: center;   /* vertical centering */
+  align-items: center;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
+  z-index: 0;
 }
+
 
 /* Back icon */
 .back-icon {
   font-size: 28px;
   color: #ffffff;
   cursor: pointer;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   transition: 0.2s;
 }
 .back-icon:hover {
@@ -24,18 +26,10 @@
   transform: scale(1.1);
 }
 
-/* Page title */
-h2 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 25px;
-}
-
 /* Make Request button */
 .make-request-btn {
-  padding: 12px 22px;
-  margin-bottom: 25px;
+  padding: 12px 24px;
+  margin-bottom: 30px;
   background: #2563eb;
   color: white;
   font-weight: 600;
@@ -43,12 +37,14 @@ h2 {
   border-radius: 8px;
   cursor: pointer;
   transition: 0.3s;
+  box-shadow: 0 0 14px 2px rgba(0, 123, 255, 0.56);
 }
 .make-request-btn:hover {
   background: #1e40af;
+  box-shadow: 0 0 22px 3px rgba(37, 99, 235, 0.7);
 }
 
-/* Request form */
+/* Request Form */
 .request-form {
   display: flex;
   flex-wrap: wrap;
@@ -56,8 +52,8 @@ h2 {
   background: #ffffff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  margin-bottom: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  margin-bottom: 40px;
   justify-content: center;
   text-align: center;
 }
@@ -74,7 +70,7 @@ h2 {
   border-radius: 6px;
   font-size: 14px;
   margin-top: 5px;
-  width: 200px;
+  width: 220px;
 }
 .submit-btn {
   padding: 12px 18px;
@@ -85,11 +81,25 @@ h2 {
   font-weight: 600;
   cursor: pointer;
   margin-top: 10px;
+  transition: background-color 0.2s ease-in-out;
 }
 .submit-btn:hover {
   background: #1e40af;
 }
-
+/* Stylish Page Header */
+.page-header {
+  width: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  padding: 20px 0;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  text-align: center;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  border-radius: 8px;
+}
 /* Tables */
 .request-table,
 .hospital-table {
@@ -98,15 +108,15 @@ h2 {
   border-collapse: collapse;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  margin-bottom: 30px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 40px;
   background: #ffffff;
 }
 .request-table thead,
 .hospital-table thead {
   background: #2563eb;
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
 }
 .request-table th,
 .hospital-table th,
@@ -118,40 +128,60 @@ h2 {
   color: #1e3a8a;
   border-bottom: 1px solid #cbd5e1;
 }
+.hospital-table th{
+  padding: 14px;
+  font-size: 14px;
+  text-align: center;
+  color: #fbfbfc;
+  border-bottom: 1px solid #cbd5e1;
+}
 .request-table tbody tr:hover,
 .hospital-table tbody tr:hover {
-  background: #dbeafe;
+  background: #e0eefc;
 }
 
-/* Urgency & Status in blue shades */
-.urgency.low, .status.approved { color: #3b82f6; font-weight: 600; }
-.urgency.medium, .status.pending { color: #2563eb; font-weight: 600; }
-.urgency.high, .status.rejected { color: #1e40af; font-weight: 600; }
+/* Urgency & Status colors */
+.urgency.low, .status.approved {
+  color: #3b82f6;
+  font-weight: 600;
+}
+.urgency.medium, .status.pending {
+  color: #2563eb;
+  font-weight: 600;
+}
+.urgency.high, .status.rejected {
+  color: #1e40af;
+  font-weight: 600;
+}
 
 /* Buttons inside tables */
 .btn-return,
 .btn-borrow {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border: none;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
+  font-weight: 700;
+  transition: 0.3s ease;
 }
 .btn-return {
   background: #2563eb;
   color: white;
+  box-shadow: 0 0 12px rgba(37,99,235,0.6);
 }
 .btn-return:hover {
   background: #1e40af;
+  box-shadow: 0 0 18px rgba(37,99,235,0.9);
 }
 .btn-borrow {
   background: #3b82f6;
   color: white;
+  box-shadow: 0 0 12px rgba(59,130,246,0.7);
 }
 .btn-borrow:hover {
   background: #1e40af;
+  box-shadow: 0 0 18px rgba(30,64,175,0.9);
 }
 
 /* Hospital List title */
@@ -163,10 +193,15 @@ h2 {
   text-align: center;
 }
 
-/* Center all forms & tables */
-.request-table,
-.hospital-table,
-.request-form {
-  margin-left: auto;
-  margin-right: auto;
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .request-form select,
+  .request-form input {
+    width: 100%;
+  }
+  .request-table,
+  .hospital-table {
+    width: 100%;
+    overflow-x: auto;
+  }
 }
