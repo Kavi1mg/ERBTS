@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2/promise'); // <-- use promise version for async/await
+const mysql = require('mysql2/promise');
 const cors = require('cors');
 
 const app = express();
