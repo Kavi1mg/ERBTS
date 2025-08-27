@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import HospitalDashboard from './components/HospitalDashboard';
-import HospitalList from './components/HospitalList';
 import HospitalResources from "./components/HospitalResources"; 
 import Register from './components/Register';
 import BorrowRequest from './components/BorrowRequest';
@@ -15,7 +14,6 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
         <Route path="/HospitalDashboard" element={<HospitalDashboard />} />
-        <Route path="/hospital-list" element={<HospitalList/>}/>
         <Route path="/borrow-request" element={<BorrowRequest />} />
         <Route path="/hospital-resources" element={<HospitalResources />} />       
         <Route path="/incoming-borrow-request" element={<IncomingBorrowRequest />} /> 

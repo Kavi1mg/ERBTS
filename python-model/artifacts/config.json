@@ -1,0 +1,28 @@
+{
+  "LOOKBACK": 4,
+  "HORIZON": 1,
+  "TARGET_COL": "used",
+  "numeric_features": [
+    "used",
+    "on_hand",
+    "total_quantity",
+    "available",
+    "pending_borrow",
+    "transfer_in",
+    "transfer_out",
+    "maintenance_due",
+    "latitude",
+    "longitude",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos"
+  ],
+  "categorical_features": [
+    "hospitalId",
+    "resourceType",
+    "urgency_level",
+    "district",
+    "state"
+  ]
+}
