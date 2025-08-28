@@ -5,24 +5,23 @@ import "./HospitalResources.css";
 
 const HospitalResources = () => {
   const [resources, setResources] = useState([]);
-  const [hospitals, setHospitals] = useState({});
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");     // added search state
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
+  const hospitalId = localStorage.getItem("hospitalId"); 
+
   useEffect(() => {
+    const hospitalId = localStorage.getItem("hospitalId");
+    if (!hospitalId) return;
+
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/resources");
-        const resourcesData = await res.json();
-
-        const hosRes = await fetch("http://localhost:5000/hospitals");
-        const hospitalsData = await hosRes.json();
-
-        setResources(resourcesData);
-        setHospitals(hospitalsData);
+        const res = await fetch(`http://localhost:3001/api/resources/${hospitalId}`);
+        const data = await res.json();
+        setResources(data);
       } catch (err) {
-        console.error("Error fetching hospital resources:", err);
+        console.error("Error fetching resources:", err);
       } finally {
         setLoading(false);
       }
@@ -31,15 +30,11 @@ const HospitalResources = () => {
     fetchData();
   }, []);
 
-  // Filter resources based on search input across hospital name and resource type
-  const filteredResources = resources.filter((res) => {
-    const hospitalName = hospitals[res.hospitalId] || "";
-    const lowerSearch = search.toLowerCase();
-    return (
-      hospitalName.toLowerCase().includes(lowerSearch) ||
-      res.resource_type.toLowerCase().includes(lowerSearch)
-    );
-  });
+
+  // Filter resources based on search input (only resourceType now)
+  const filteredResources = resources.filter((res) =>
+    res.resource_type.toLowerCase().includes(search.toLowerCase())
+  );
 
   if (loading) return <div className="hospital-resources-page">Loading...</div>;
 
@@ -51,7 +46,7 @@ const HospitalResources = () => {
       </header>
       <input
         type="text"
-        placeholder="🔍 Filter requests..."
+        placeholder="🔍 Filter resources..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="filter-input"
@@ -60,7 +55,6 @@ const HospitalResources = () => {
         <thead>
           <tr>
             <th>Id</th>
-            <th>Hospital Name</th>
             <th>Resource Type</th>
             <th>Total Quantity</th>
             <th>Available</th>
@@ -68,9 +62,8 @@ const HospitalResources = () => {
         </thead>
         <tbody>
           {filteredResources.map((res, idx) => (
-            <tr key={`${res.hospitalId}-${res.resource_type}`}>
+            <tr key={res.id}>
               <td>{idx + 1}</td>
-              <td>{hospitals[res.hospitalId] || "Unknown"}</td>
               <td>{res.resource_type}</td>
               <td>{res.total_quantity}</td>
               <td>{res.available}</td>
@@ -78,7 +71,7 @@ const HospitalResources = () => {
           ))}
           {filteredResources.length === 0 && (
             <tr>
-              <td colSpan="5">No resources found</td>
+              <td colSpan="4">No resources found</td>
             </tr>
           )}
         </tbody>

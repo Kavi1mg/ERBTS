@@ -6,28 +6,72 @@ import "./BorrowRequest.css";
 
 const BorrowRequest = () => {
   const navigate = useNavigate();
+  const hospitalId = localStorage.getItem("hospitalId"); // logged in hospitalId
+
   const [showForm, setShowForm] = useState(false);
   const [resourceType, setResourceType] = useState("");
   const [quantity, setQuantity] = useState("");
   const [urgencyLevel, setUrgencyLevel] = useState("");
+  const [toHospitalId, setToHospitalId] = useState("");
 
-  // Initialize empty arrays instead of hardcoding data
   const [borrowRequests, setBorrowRequests] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
-  const [filteredHospitals, setFilteredHospitals] = useState([]);
 
-  // Fetch data from backend on mount
+  // Fetch borrow requests on mount
   useEffect(() => {
-    fetch("/api/borrow-requests")
+    fetchBorrowRequests();
+    fetchHospitals();
+  }, []);
+
+  const fetchBorrowRequests = () => {
+    fetch(`http://localhost:3001/api/borrow_requests/${hospitalId}`)
       .then((res) => res.json())
       .then((data) => setBorrowRequests(data))
-      .catch((err) => console.error("Error fetching requests:", err));
+      .catch((err) => console.error("Error fetching borrow requests:", err));
+  };
 
-    fetch("/api/hospitals")
+  const fetchHospitals = () => {
+    fetch(`http://localhost:3001/api/hospitals`)
       .then((res) => res.json())
-      .then((data) => setHospitalList(data))
+      .then((data) => setHospitalList(data.filter(h => h.hospitalId !== hospitalId)))
       .catch((err) => console.error("Error fetching hospitals:", err));
-  }, []);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!resourceType || !quantity || !urgencyLevel || !toHospitalId) return;
+
+    fetch("http://localhost:3001/api/borrow_requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fromHospitalId: hospitalId,
+        toHospitalId,
+        resourceType,
+        quantity,
+        urgency_level: urgencyLevel,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        fetchBorrowRequests();
+        setShowForm(false);
+        setResourceType("");
+        setQuantity("");
+        setUrgencyLevel("");
+        setToHospitalId("");
+      })
+      .catch((err) => console.error("Error submitting request:", err));
+  };
+
+  const handleReturn = (id) => {
+    fetch(`http://localhost:3001/api/borrow_requests/${id}/return`, {
+      method: "PUT",
+    })
+      .then((res) => res.json())
+      .then(() => fetchBorrowRequests())
+      .catch((err) => console.error("Error marking return:", err));
+  };
 
   const iconForResourceType = (type) => {
     switch (type.toLowerCase()) {
@@ -42,67 +86,6 @@ const BorrowRequest = () => {
       default:
         return "🩺";
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!resourceType || !quantity || !urgencyLevel) return;
-
-    const newRequest = {
-      toHospitalId: "Select Hospital",
-      resourceType,
-      quantity: Number(quantity),
-      urgency_level: urgencyLevel,
-      status: "pending",
-      requestedAt: new Date().toISOString().split("T")[0],
-      updatedAt: new Date().toISOString().split("T")[0],
-      due_date: "-",
-      returned_at: null,
-      return_status: "not_returned",
-    };
-
-    fetch("/api/borrow-requests", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newRequest),
-    })
-      .then((res) => res.json())
-      .then((savedRequest) => {
-        setBorrowRequests([...borrowRequests, savedRequest]);
-        setResourceType("");
-        setQuantity("");
-        setUrgencyLevel("");
-        setShowForm(false);
-        setFilteredHospitals(hospitalList);
-      })
-      .catch((err) => console.error("Error submitting request:", err));
-  };
-
-  const handleReturn = (id) => {
-    const today = new Date().toISOString().split("T")[0];
-
-    fetch(`/api/borrow-requests/${id}/return`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ return_status: "returned", returned_at: today }),
-    })
-      .then((res) => res.json())
-      .then((updatedRequest) => {
-        const updated = borrowRequests.map((req) =>
-          req.id === id ? updatedRequest : req
-        );
-        setBorrowRequests(updated);
-      })
-      .catch((err) => console.error("Error returning resource:", err));
-  };
-
-  const handleBorrow = (hospitalId) => {
-    fetch(`/api/hospitals/${hospitalId}/borrow`, { method: "POST" })
-      .then((res) => res.json())
-      .then(() => {
-        alert(`Borrow request sent to hospital ID: ${hospitalId}`);
-      })
-      .catch((err) => console.error("Error sending borrow request:", err));
   };
 
   return (
@@ -126,6 +109,22 @@ const BorrowRequest = () => {
 
       {showForm && (
         <form className="request-form" onSubmit={handleSubmit}>
+          <label>
+            Select Hospital:
+            <select
+              value={toHospitalId}
+              onChange={(e) => setToHospitalId(e.target.value)}
+              required
+            >
+              <option value="">Select Hospital</option>
+              {hospitalList.map((h) => (
+                <option key={h.hospitalId} value={h.hospitalId}>
+                  {h.name} ({h.hospitalId})
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label>
             Resource Type:
             <select
@@ -160,15 +159,9 @@ const BorrowRequest = () => {
               required
             >
               <option value="">Select</option>
-              <option value="High" style={{ color: "#dc2626" }}>
-                High
-              </option>
-              <option value="Medium" style={{ color: "#2563eb" }}>
-                Medium
-              </option>
-              <option value="Low" style={{ color: "#16a34a" }}>
-                Low
-              </option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
             </select>
           </label>
 
@@ -178,11 +171,11 @@ const BorrowRequest = () => {
         </form>
       )}
 
-      {/* Requests Table (Hospital Name column removed) */}
       <table className="request-table">
         <thead>
           <tr>
             <th>S.No</th>
+            <th>Hospital Name</th>
             <th>Resource Type</th>
             <th>Quantity</th>
             <th>Urgency Level</th>
@@ -199,6 +192,7 @@ const BorrowRequest = () => {
           {borrowRequests.map((req, idx) => (
             <tr key={req.id}>
               <td>{idx + 1}</td>
+              <td>{req.toHospitalName}</td>
               <td>
                 {iconForResourceType(req.resourceType)} {req.resourceType}
               </td>
@@ -211,58 +205,25 @@ const BorrowRequest = () => {
               <td className={`status ${req.status.toLowerCase()}`}>
                 {req.status}
               </td>
-              <td>{req.due_date}</td>
+              <td>{req.due_date || "-"}</td>
               <td>{req.returned_at || "-"}</td>
               <td>{req.return_status}</td>
               <td>
-                <button
-                  className="btn-return"
-                  onClick={() => handleReturn(req.id)}
-                  title="Mark as Returned"
-                >
-                  Return
-                </button>
+                {req.return_status === "not_returned" && req.status === "approved" ? (
+                  <button
+                    className="btn-return"
+                    onClick={() => handleReturn(req.id)}
+                  >
+                    Return
+                  </button>
+                ) : (
+                  "-"
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {filteredHospitals.length > 0 && (
-        <div className="hospital-list">
-          <h3>Hospitals List</h3>
-          <table className="hospital-table">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>Hospital Name</th>
-                <th>Address</th>
-                <th>Ph.No</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredHospitals.map((h, idx) => (
-                <tr key={h.id}>
-                  <td>{idx + 1}</td>
-                  <td>{h.name}</td>
-                  <td>{h.address}</td>
-                  <td>{h.phone}</td>
-                  <td>
-                    <button
-                      className="btn-borrow"
-                      onClick={() => handleBorrow(h.id)}
-                      title="Send Borrow Request"
-                    >
-                      Borrow
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 };
