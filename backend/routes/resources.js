@@ -5,7 +5,6 @@ const db = require('../db'); // adjust path to your db connection file
 // GET current resources for the logged-in hospital
 router.get('/current', (req, res) => {
   const userId = req.headers['userid']; // send this from frontend
-
   if (!userId) {
     return res.status(400).json({ error: 'Hospital ID required' });
   }

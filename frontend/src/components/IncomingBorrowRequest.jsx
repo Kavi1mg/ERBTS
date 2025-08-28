@@ -31,7 +31,6 @@ const IncomingBorrowRequest = () => {
         if (aVal === null) return 1;
         if (bVal === null) return -1;
 
-        // Handle possible string or number values
         if (typeof aVal === "string") {
           return sortConfig.direction === "asc"
             ? aVal.localeCompare(bVal)
@@ -88,9 +87,7 @@ const IncomingBorrowRequest = () => {
             <th onClick={() => requestSort("request_id")}>
               S.No{getSortIndicator("request_id")}
             </th>
-            <th onClick={() => requestSort("hospital_name")}>
-              Hospital Name{getSortIndicator("hospital_name")}
-            </th>
+            {/* Removed Hospital Name */}
             <th onClick={() => requestSort("resource_type")}>
               Resource Type{getSortIndicator("resource_type")}
             </th>
@@ -125,7 +122,7 @@ const IncomingBorrowRequest = () => {
             sortedRequests.map((req, idx) => (
               <tr key={req.request_id}>
                 <td>{idx + 1}</td>
-                <td>{req.hospital_name}</td>
+                {/* Removed Hospital Name Cell */}
                 <td>{req.resource_type}</td>
                 <td>{req.quantity}</td>
                 <td className={`urgency ${req.urgency_level?.toLowerCase()}`}>
@@ -181,7 +178,7 @@ const IncomingBorrowRequest = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="11">No requests found</td>
+              <td colSpan="10">No requests found</td>
             </tr>
           )}
         </tbody>

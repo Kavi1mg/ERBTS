@@ -12,7 +12,6 @@
   z-index: 0;
 }
 
-
 /* Back icon */
 .back-icon {
   font-size: 28px;
@@ -118,7 +117,14 @@
   color: #ffffff;
   font-weight: 700;
 }
-.request-table th,
+.request-table th{
+  padding: 14px;
+  font-size: 14px;
+  text-align: center;
+  color: #f5f6f8;
+  border-bottom: 1px solid #cbd5e1;
+}
+
 .hospital-table th,
 .request-table td,
 .hospital-table td {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { FaHospital, FaAmbulance, FaProcedures, FaLungs } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -11,41 +11,24 @@ const BorrowRequest = () => {
   const [quantity, setQuantity] = useState("");
   const [urgencyLevel, setUrgencyLevel] = useState("");
 
-  const [borrowRequests, setBorrowRequests] = useState([
-    {
-      id: 1,
-      toHospitalId: "DL_AIIMS",
-      resourceType: "ICU Beds",
-      quantity: 10,
-      urgency_level: "High",
-      status: "pending",
-      requestedAt: "2025-08-25",
-      updatedAt: "2025-08-25",
-      due_date: "2025-09-01",
-      returned_at: null,
-      return_status: "not_returned",
-    },
-    {
-      id: 2,
-      toHospitalId: "TN_CMC",
-      resourceType: "Ventilators",
-      quantity: 5,
-      urgency_level: "Medium",
-      status: "approved",
-      requestedAt: "2025-08-24",
-      updatedAt: "2025-08-25",
-      due_date: "2025-08-30",
-      returned_at: "2025-08-26",
-      return_status: "returned",
-    },
-  ]);
-
-  const [hospitalList, setHospitalList] = useState([
-    { id: 1, name: "MH_KEM", address: "Mumbai, MH", phone: "022-123456" },
-    { id: 2, name: "PB_PGI", address: "Chandigarh, PB", phone: "0172-654321" },
-  ]);
-
+  // ✅ Initialize empty arrays instead of hardcoding data
+  const [borrowRequests, setBorrowRequests] = useState([]);
+  const [hospitalList, setHospitalList] = useState([]);
   const [filteredHospitals, setFilteredHospitals] = useState([]);
+
+  // ✅ Fetch data from backend on mount
+  useEffect(() => {
+    // Example: replace with your backend API
+    fetch("/api/borrow-requests")
+      .then((res) => res.json())
+      .then((data) => setBorrowRequests(data))
+      .catch((err) => console.error("Error fetching requests:", err));
+
+    fetch("/api/hospitals")
+      .then((res) => res.json())
+      .then((data) => setHospitalList(data))
+      .catch((err) => console.error("Error fetching hospitals:", err));
+  }, []);
 
   const iconForResourceType = (type) => {
     switch (type.toLowerCase()) {
@@ -67,7 +50,6 @@ const BorrowRequest = () => {
     if (!resourceType || !quantity || !urgencyLevel) return;
 
     const newRequest = {
-      id: borrowRequests.length + 1,
       toHospitalId: "Select Hospital",
       resourceType,
       quantity: Number(quantity),
@@ -80,29 +62,51 @@ const BorrowRequest = () => {
       return_status: "not_returned",
     };
 
-    setBorrowRequests([...borrowRequests, newRequest]);
-    setResourceType("");
-    setQuantity("");
-    setUrgencyLevel("");
-    setShowForm(false);
-    setFilteredHospitals(hospitalList);
+    // ✅ Call backend to save
+    fetch("/api/borrow-requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newRequest),
+    })
+      .then((res) => res.json())
+      .then((savedRequest) => {
+        setBorrowRequests([...borrowRequests, savedRequest]); // UI update
+        setResourceType("");
+        setQuantity("");
+        setUrgencyLevel("");
+        setShowForm(false);
+        setFilteredHospitals(hospitalList);
+      })
+      .catch((err) => console.error("Error submitting request:", err));
   };
 
   const handleReturn = (id) => {
-    const updated = borrowRequests.map((req) =>
-      req.id === id
-        ? {
-            ...req,
-            return_status: "returned",
-            returned_at: new Date().toISOString().split("T")[0],
-          }
-        : req
-    );
-    setBorrowRequests(updated);
+    const today = new Date().toISOString().split("T")[0];
+
+    // ✅ Update backend
+    fetch(`/api/borrow-requests/${id}/return`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ return_status: "returned", returned_at: today }),
+    })
+      .then((res) => res.json())
+      .then((updatedRequest) => {
+        const updated = borrowRequests.map((req) =>
+          req.id === id ? updatedRequest : req
+        );
+        setBorrowRequests(updated);
+      })
+      .catch((err) => console.error("Error returning resource:", err));
   };
 
   const handleBorrow = (hospitalId) => {
-    alert(`Borrow request sent to hospital ID: ${hospitalId}`);
+    // ✅ Example: call backend
+    fetch(`/api/hospitals/${hospitalId}/borrow`, { method: "POST" })
+      .then((res) => res.json())
+      .then(() => {
+        alert(`Borrow request sent to hospital ID: ${hospitalId}`);
+      })
+      .catch((err) => console.error("Error sending borrow request:", err));
   };
 
   return (
@@ -112,9 +116,9 @@ const BorrowRequest = () => {
         onClick={() => navigate(-1)}
         title="Go Back"
       />
-      
+
       <header className="page-header">
-        <h1>Incoming Borrow Requests</h1>
+        <h1>Borrow Requests</h1>
       </header>
 
       <button
@@ -178,6 +182,7 @@ const BorrowRequest = () => {
         </form>
       )}
 
+      {/* Requests Table */}
       <table className="request-table">
         <thead>
           <tr>
@@ -209,7 +214,9 @@ const BorrowRequest = () => {
               </td>
               <td>{req.requestedAt}</td>
               <td>{req.updatedAt}</td>
-              <td className={`status ${req.status.toLowerCase()}`}>{req.status}</td>
+              <td className={`status ${req.status.toLowerCase()}`}>
+                {req.status}
+              </td>
               <td>{req.due_date}</td>
               <td>{req.returned_at || "-"}</td>
               <td>{req.return_status}</td>
