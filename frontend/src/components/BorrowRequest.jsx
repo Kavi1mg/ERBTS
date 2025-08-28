@@ -11,14 +11,13 @@ const BorrowRequest = () => {
   const [quantity, setQuantity] = useState("");
   const [urgencyLevel, setUrgencyLevel] = useState("");
 
-  // ✅ Initialize empty arrays instead of hardcoding data
+  // Initialize empty arrays instead of hardcoding data
   const [borrowRequests, setBorrowRequests] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
   const [filteredHospitals, setFilteredHospitals] = useState([]);
 
-  // ✅ Fetch data from backend on mount
+  // Fetch data from backend on mount
   useEffect(() => {
-    // Example: replace with your backend API
     fetch("/api/borrow-requests")
       .then((res) => res.json())
       .then((data) => setBorrowRequests(data))
@@ -62,7 +61,6 @@ const BorrowRequest = () => {
       return_status: "not_returned",
     };
 
-    // ✅ Call backend to save
     fetch("/api/borrow-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,7 +68,7 @@ const BorrowRequest = () => {
     })
       .then((res) => res.json())
       .then((savedRequest) => {
-        setBorrowRequests([...borrowRequests, savedRequest]); // UI update
+        setBorrowRequests([...borrowRequests, savedRequest]);
         setResourceType("");
         setQuantity("");
         setUrgencyLevel("");
@@ -83,7 +81,6 @@ const BorrowRequest = () => {
   const handleReturn = (id) => {
     const today = new Date().toISOString().split("T")[0];
 
-    // ✅ Update backend
     fetch(`/api/borrow-requests/${id}/return`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -100,7 +97,6 @@ const BorrowRequest = () => {
   };
 
   const handleBorrow = (hospitalId) => {
-    // ✅ Example: call backend
     fetch(`/api/hospitals/${hospitalId}/borrow`, { method: "POST" })
       .then((res) => res.json())
       .then(() => {
@@ -182,12 +178,11 @@ const BorrowRequest = () => {
         </form>
       )}
 
-      {/* Requests Table */}
+      {/* Requests Table (Hospital Name column removed) */}
       <table className="request-table">
         <thead>
           <tr>
             <th>S.No</th>
-            <th>Hospital Name</th>
             <th>Resource Type</th>
             <th>Quantity</th>
             <th>Urgency Level</th>
@@ -204,7 +199,6 @@ const BorrowRequest = () => {
           {borrowRequests.map((req, idx) => (
             <tr key={req.id}>
               <td>{idx + 1}</td>
-              <td>{req.toHospitalId}</td>
               <td>
                 {iconForResourceType(req.resourceType)} {req.resourceType}
               </td>
