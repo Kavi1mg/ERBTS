@@ -9,12 +9,40 @@ const IncomingBorrowRequest = () => {
   const [search, setSearch] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
+  const hospitalId = localStorage.getItem("hospitalId"); // hospital from login
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/incoming_requests")
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = () => {
+    fetch(`http://localhost:3001/api/incoming_requests/${hospitalId}`)
       .then((res) => res.json())
       .then((data) => setRequests(data))
       .catch((err) => console.error("Error fetching incoming requests:", err));
-  }, []);
+  };
+
+  const handleApprove = (id) => {
+    const dueDate = prompt("Enter due date (YYYY-MM-DD):");
+    if (!dueDate) return;
+    fetch(`http://localhost:3001/api/borrow_requests/${id}/approve`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ due_date: dueDate }),
+    })
+      .then((res) => res.json())
+      .then(() => fetchRequests())
+      .catch((err) => console.error("Error approving request:", err));
+  };
+
+  const handleReject = (id) => {
+    fetch(`http://localhost:3001/api/borrow_requests/${id}/reject`, {
+      method: "PUT",
+    })
+      .then((res) => res.json())
+      .then(() => fetchRequests())
+      .catch((err) => console.error("Error rejecting request:", err));
+  };
 
   const filteredRequests = requests.filter((req) =>
     Object.values(req).some((val) =>
@@ -27,11 +55,8 @@ const IncomingBorrowRequest = () => {
       const sorted = [...filteredRequests].sort((a, b) => {
         let aVal = a[sortConfig.key];
         let bVal = b[sortConfig.key];
-
         if (aVal === null) return 1;
         if (bVal === null) return -1;
-
-        // Handle possible string or number values
         if (typeof aVal === "string") {
           return sortConfig.direction === "asc"
             ? aVal.localeCompare(bVal)
@@ -53,12 +78,6 @@ const IncomingBorrowRequest = () => {
     setSortConfig({ key, direction });
   };
 
-  const handleInputChange = (idx, field, value) => {
-    const newRequests = [...requests];
-    newRequests[idx][field] = value;
-    setRequests(newRequests);
-  };
-
   const getSortIndicator = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "asc" ? " ▲" : " ▼";
@@ -69,7 +88,6 @@ const IncomingBorrowRequest = () => {
   return (
     <div className="incoming-requests-page">
       <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
-
       <header className="page-header">
         <h1>Incoming Borrow Requests</h1>
       </header>
@@ -134,10 +152,20 @@ const IncomingBorrowRequest = () => {
                 <td>{req.requested_at}</td>
                 <td>{req.updated_at}</td>
                 <td>
-                  {req.status === "Pending" ? (
+                  {req.status === "pending" ? (
                     <div className="action-buttons">
-                      <button className="btn-accept">Accept</button>
-                      <button className="btn-reject">Reject</button>
+                      <button
+                        className="btn-accept"
+                        onClick={() => handleApprove(req.request_id)}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="btn-reject"
+                        onClick={() => handleReject(req.request_id)}
+                      >
+                        Reject
+                      </button>
                     </div>
                   ) : (
                     <span className={`status ${req.status?.toLowerCase()}`}>
@@ -145,38 +173,9 @@ const IncomingBorrowRequest = () => {
                     </span>
                   )}
                 </td>
-                <td>
-                  {req.status === "Approved" ? (
-                    <input
-                      type="date"
-                      value={req.due_date || ""}
-                      onChange={(e) =>
-                        handleInputChange(idx, "due_date", e.target.value)
-                      }
-                    />
-                  ) : (
-                    req.due_date || "-"
-                  )}
-                </td>
-                <td>
-                  <input
-                    type="date"
-                    value={req.returned_at || ""}
-                    onChange={(e) =>
-                      handleInputChange(idx, "returned_at", e.target.value)
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={req.return_status || ""}
-                    onChange={(e) =>
-                      handleInputChange(idx, "return_status", e.target.value)
-                    }
-                    placeholder="Enter status"
-                  />
-                </td>
+                <td>{req.due_date || "-"}</td>
+                <td>{req.returned_at || "-"}</td>
+                <td>{req.return_status || "-"}</td>
               </tr>
             ))
           ) : (
