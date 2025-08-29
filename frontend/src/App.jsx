@@ -7,6 +7,7 @@ import Register from './components/Register';
 import BorrowRequest from './components/BorrowRequest';
 import IncomingBorrowRequest from './components/IncomingBorrowRequest'; 
 import EquipmentCondition from './components/EquipmentCondition';
+import Prediction from './components/prediction';
 const App = () => {
   return (
     <Router>
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/hospital-resources" element={<HospitalResources />} />       
         <Route path="/incoming-borrow-request" element={<IncomingBorrowRequest />} /> 
         <Route path="/equipment-tracking" element={<EquipmentCondition />} />
+        <Route path="/predictions" element={<Prediction/>}/>
       </Routes>
     </Router>
   );
