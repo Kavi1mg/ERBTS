@@ -11,6 +11,11 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'Narmada*09',
+<<<<<<< HEAD
+  password: 'KAVI@123mg',
+=======
+  password: 'BG30@MySQL',
+>>>>>>> ec378f1f402ab858c43412461d9e224ead92248d
   database: 'erbts'
 });
 
