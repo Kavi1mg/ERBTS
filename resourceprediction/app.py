@@ -24,7 +24,7 @@ def get_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="KAVI@123mg",
+        password="Narmada*09",
         database="erbts"
     )
 
@@ -90,6 +90,8 @@ def predict():
         "date": tomorrow_date,
         "predictions": results
     })
+
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

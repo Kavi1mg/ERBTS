@@ -10,7 +10,7 @@ app.use(cors());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'BG30@MySQL',
+  password: 'Narmada*09',
   database: 'erbts'
 });
 
@@ -305,6 +305,9 @@ app.get('/api/hospitals', (req, res) => {
     res.json(results);
   });
 });
+
+
+
 
 
 const PORT = 3001;
