@@ -6,7 +6,7 @@ import "./BorrowRequest.css";
 
 const BorrowRequest = () => {
   const navigate = useNavigate();
-  const hospitalId = localStorage.getItem("hospitalId"); // logged in hospitalId
+  const hospitalId = localStorage.getItem("hospitalId");
 
   const [showForm, setShowForm] = useState(false);
   const [resourceType, setResourceType] = useState("");
@@ -229,3 +229,6 @@ const BorrowRequest = () => {
 };
 
 export default BorrowRequest;
+
+
+

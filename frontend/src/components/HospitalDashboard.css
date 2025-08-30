@@ -96,7 +96,7 @@ html, body {
   gap: 1.5rem;
   width: 100%;
   max-width: 1000px;
-  margin: 14rem auto 1rem auto; /* ⬅️ pushed much further down */
+  margin: 6rem auto 1rem auto; /* ⬅️ cards moved up */
   padding: 0 1rem;
 }
 
@@ -123,37 +123,17 @@ html, body {
   color: white;
 }
 
-/* MAP */
-/* MAP */
-.dashboard-map-section {
-  width: 100%;         /* full screen width */
-  max-width: 100%;     
-  margin: 2rem auto;
-  height: 250px;       /* shorter height */
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-  background: white;
-}
-
-.dashboard-map-section iframe {
+/* FOOTER */
+.dashboard-footer {
+  margin-top: 1rem;
+  padding: 1rem 0;
   width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0;   /* sharp corners */
+  max-width: 100%;
+  text-align: center;
+  background: #000;   /* ✅ Black background */
+  color: white;       /* White text */
+  font-size: 0.9rem;
 }
-
-  /* FOOTER */
-  .dashboard-footer {
-    margin-top: 1rem;
-    padding: 1rem 0;
-    width: 100%;
-    max-width: 100%;
-    text-align: center;
-    background: #000;   /* ✅ Black background */
-    color: white;       /* White text */
-    font-size: 0.9rem;
-}
-
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
@@ -163,9 +143,5 @@ html, body {
   .dashboard-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     margin-top: 1.5rem;
-  }
-  .dashboard-map-section {
-    height: 250px;   /* smaller height on mobile */
-    max-width: 100%; /* allow full width on mobile */
   }
 }
