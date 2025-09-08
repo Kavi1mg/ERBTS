@@ -194,7 +194,7 @@
 }
 
 /* Responsive fixes */
-@media (max-width: 768px) {
+@media (max-width: 768px) { 
   .request-form select,
   .request-form input {
     width: 100%;

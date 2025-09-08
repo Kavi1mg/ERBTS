@@ -270,6 +270,42 @@ app.get("/api/equipment/:hospitalId", (req, res) => {
   });
 });
 
+app.get('/api/resources', (req, res) => {
+  const query = "SELECT DISTINCT resource_type AS resourceType FROM available_resources";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching resource types:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    const resourceTypes = results.map(row => row.resourceType);
+    res.json(resourceTypes);
+  });
+});
+
+app.get('/api/hospitals', (req, res) => {
+  const { resourceType, minQuantity } = req.query;
+
+  if (!resourceType || !minQuantity) {
+    return res.status(400).json({ error: 'Missing resourceType or minQuantity query parameters' });
+  }
+
+  const query = `
+    SELECT h.hospitalId, h.name, h.address, h.phone_number AS phone,
+           ar.resource_type, ar.available AS quantity
+    FROM hospital h
+    JOIN available_resources ar ON h.hospitalId = ar.hospitalId
+    WHERE ar.resource_type = ? AND ar.available >= ?;
+  `;
+
+  db.query(query, [resourceType, Number(minQuantity)], (err, results) => {
+    if (err) {
+      console.error('Error fetching hospitals by resource:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
 
 
 
