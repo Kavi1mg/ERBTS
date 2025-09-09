@@ -1,7 +1,36 @@
+/* Force only horizontal scrollbar, hide vertical */
+html, body {
+  height: 100%;
+  overflow-x: scroll;   /* ✅ always show horizontal scrollbar */
+  overflow-y: hidden;   /* ❌ remove vertical scrollbar */
+}
+
+/* Page wrapper */
+.borrow-request-page {
+  overflow-x: scroll;   /* ✅ enable horizontal scroll */
+  overflow-y: hidden;
+}
+
+/* Table wrapper (if you want scroll only around tables) */
+.scrollable-table-region {
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+/* Force tables to be wider than viewport so scroll bar is visible */
+.request-table,
+.hospital-table {
+  min-width: 1300px;   /* ✅ bigger than screen width */
+  width: auto;
+  white-space: nowrap; /* prevent wrapping */
+}
+
+
 .borrow-request-page {
   width: 100vw;
-  height: 100vh;          /* ✅ fixed height to allow scrolling */
-  position: relative;     /* ✅ no more locking */
+  min-height: 100vh;
+  position: fixed;
   left: 0;
   top: 0;
   display: flex;
@@ -10,12 +39,7 @@
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   text-align: center;
   z-index: 0;
-
-  /* ✅ working scrollbar */
-  overflow-y: auto;
-  overflow-x: hidden;
 }
-
 
 /* Back icon */
 .back-icon {
@@ -122,7 +146,14 @@
   color: #ffffff;
   font-weight: 700;
 }
-.request-table th,
+.request-table th{
+  padding: 14px;
+  font-size: 14px;
+  text-align: center;
+  color: #f5f6f8;
+  border-bottom: 1px solid #cbd5e1;
+}
+
 .hospital-table th,
 .request-table td,
 .hospital-table td {
@@ -198,7 +229,7 @@
 }
 
 /* Responsive fixes */
-@media (max-width: 768px) { 
+@media (max-width: 768px) {
   .request-form select,
   .request-form input {
     width: 100%;

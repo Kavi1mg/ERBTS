@@ -46,10 +46,11 @@ const EquipmentCondition = () => {
 
   return (
     <div className="equipment-condition-page">
-      <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
       <header className="page-header">
-        <h1>Equipment Conditions</h1>
+      <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
+      <h1>Equipment Conditions</h1>
       </header>
+
       <input
         type="text"
         placeholder="🔍 Filter equipment..."

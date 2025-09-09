@@ -17,20 +17,15 @@ const BorrowRequest = () => {
   const [borrowRequests, setBorrowRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch resource types and borrow requests on mount
   useEffect(() => {
     fetchAvailableResourceTypes();
     fetchBorrowRequests();
   }, []);
 
-  // Fetch dynamic resource types from backend - corrected to handle array of strings
   const fetchAvailableResourceTypes = () => {
     fetch(`http://localhost:3001/api/resources`)
       .then((res) => res.json())
-      .then((data) => {
-        // data is an array of strings representing resource types
-        setResourceTypes(data);
-      })
+      .then((data) => setResourceTypes(data))
       .catch((err) => console.error("Error fetching resource types:", err));
   };
 
@@ -41,7 +36,6 @@ const BorrowRequest = () => {
       .catch((err) => console.error("Error fetching borrow requests:", err));
   };
 
-  // Handle initial request form submit
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!resourceType || !quantity || !urgencyLevel) return;
@@ -51,7 +45,6 @@ const BorrowRequest = () => {
         `http://localhost:3001/api/hospitals?resourceType=${resourceType}&minQuantity=${quantity}`
       );
       const data = await res.json();
-      // Backend already filters by resource and quantity, filter out own hospital
       const filtered = data.filter((h) => h.hospitalId !== hospitalId);
       setFilteredHospitals(filtered);
       setShowHospitalsTable(true);
@@ -62,7 +55,6 @@ const BorrowRequest = () => {
     }
   };
 
-  // Borrow request action for particular hospital
   const handleBorrowRequest = async (selectedHospital) => {
     setLoading(true);
     try {
@@ -77,7 +69,6 @@ const BorrowRequest = () => {
           urgency_level: urgencyLevel,
         }),
       });
-      // Reset UI
       setShowForm(false);
       setShowHospitalsTable(false);
       setResourceType("");
@@ -108,170 +99,187 @@ const BorrowRequest = () => {
     }
   };
 
+  const handleReturn = (id) => {
+    // Implement return logic here
+  };
+
   return (
     <div className="borrow-request-page">
-      <IoArrowBack
-        className="back-icon"
-        onClick={() => navigate(-1)}
-        title="Go Back"
-      />
       <header className="page-header">
+        <IoArrowBack
+          className="back-icon"
+          onClick={() => navigate(-1)}
+          title="Go Back"
+        />
         <h1>Borrow Requests</h1>
       </header>
-      <button
-        className="make-request-btn"
-        onClick={() => {
-          setShowForm(!showForm);
-          setShowHospitalsTable(false);
-          setResourceType("");
-          setQuantity("");
-          setUrgencyLevel("");
-          setFilteredHospitals([]);
-        }}
-      >
-        {showForm ? "Close Request Form" : "Make a Request"}
-      </button>
 
-      {/* Initial Request Form */}
-      {showForm && !showHospitalsTable && (
-        <form className="request-form" onSubmit={handleFormSubmit}>
-          <label>
-            Resource Type:
-            <select
-              value={resourceType}
-              onChange={(e) => setResourceType(e.target.value)}
-              required
-            >
-              <option value="">Select</option>
-              {resourceTypes.map((rt) => (
-                <option key={rt} value={rt}>
-                  {rt}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Quantity:
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Urgency Level:
-            <select
-              value={urgencyLevel}
-              onChange={(e) => setUrgencyLevel(e.target.value)}
-              required
-            >
-              <option value="">Select</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
-          </label>
-          <button type="submit" className="submit-btn">
-            {loading ? "Searching..." : "Submit"}
-          </button>
-        </form>
-      )}
+      <div className="borrow-page-content">
+        <button
+          className="make-request-btn"
+          onClick={() => {
+            setShowForm(!showForm);
+            setShowHospitalsTable(false);
+            setResourceType("");
+            setQuantity("");
+            setUrgencyLevel("");
+            setFilteredHospitals([]);
+          }}
+        >
+          {showForm ? "Close Request Form" : "Make a Request"}
+        </button>
 
-      {/* Hospital Selection Table */}
-      {showForm && showHospitalsTable && (
-        <table className="hospital-table">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Hospital Name</th>
-              <th>Address</th>
-              <th>Phone No</th>
-              <th>Quantity Available</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredHospitals.length === 0 ? (
+        {/* Initial Request Form */}
+        {showForm && !showHospitalsTable && (
+          <form className="request-form" onSubmit={handleFormSubmit}>
+            <label>
+              Resource Type:
+              <select
+                value={resourceType}
+                onChange={(e) => setResourceType(e.target.value)}
+                required
+              >
+                <option value="">Select</option>
+                {resourceTypes.map((rt) => (
+                  <option key={rt} value={rt}>
+                    {rt}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Quantity:
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                required
+              />
+            </label>
+            <label>
+              Urgency Level:
+              <select
+                value={urgencyLevel}
+                onChange={(e) => setUrgencyLevel(e.target.value)}
+                required
+              >
+                <option value="">Select</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <button type="submit" className="submit-btn">
+              {loading ? "Searching..." : "Submit"}
+            </button>
+          </form>
+        )}
+
+        {/* Hospital Selection Table */}
+        {showForm && showHospitalsTable && (
+          <div className="scrollable-table-region">
+            <table className="hospital-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Hospital Name</th>
+                  <th>Address</th>
+                  <th>Phone No</th>
+                  <th>Quantity Available</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredHospitals.length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>
+                      No hospitals found with the required quantity.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredHospitals.map((hosp, idx) => (
+                    <tr key={hosp.hospitalId}>
+                      <td>{idx + 1}</td>
+                      <td>{hosp.name}</td>
+                      <td>{hosp.address}</td>
+                      <td>{hosp.phone}</td>
+                      <td>{hosp.quantity}</td>
+                      <td>
+                        <button
+                          className="btn-borrow"
+                          disabled={loading}
+                          onClick={() => handleBorrowRequest(hosp)}
+                        >
+                          Borrow
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Existing Borrow Requests Table */}
+        <div className="scrollable-table-region">
+          <table className="request-table">
+            <thead>
               <tr>
-                <td colSpan={6}>No hospitals found with the required quantity.</td>
+                <th>S.No</th>
+                <th>Hospital Name</th>
+                <th>Resource Type</th>
+                <th>Quantity</th>
+                <th>Urgency Level</th>
+                <th>Requested At</th>
+                <th>Updated At</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Returned At</th>
+                <th>Return Status</th>
+                <th>Action</th>
               </tr>
-            ) : (
-              filteredHospitals.map((hosp, idx) => (
-                <tr key={hosp.hospitalId}>
+            </thead>
+            <tbody>
+              {borrowRequests.map((req, idx) => (
+                <tr key={req.id}>
                   <td>{idx + 1}</td>
-                  <td>{hosp.name}</td>
-                  <td>{hosp.address}</td>
-                  <td>{hosp.phone}</td>
-                  <td>{hosp.quantity}</td>
+                  <td>{req.toHospitalName}</td>
                   <td>
-                    <button
-                      className="btn-borrow"
-                      disabled={loading}
-                      onClick={() => handleBorrowRequest(hosp)}
-                    >
-                      Borrow
-                    </button>
+                    {iconForResourceType(req.resourceType)} {req.resourceType}
+                  </td>
+                  <td>{req.quantity}</td>
+                  <td className={`urgency ${req.urgency_level.toLowerCase()}`}>
+                    {req.urgency_level}
+                  </td>
+                  <td>{req.requestedAt}</td>
+                  <td>{req.updatedAt}</td>
+                  <td className={`status ${req.status.toLowerCase()}`}>
+                    {req.status}
+                  </td>
+                  <td>{req.due_date || "-"}</td>
+                  <td>{req.returned_at || "-"}</td>
+                  <td>{req.return_status}</td>
+                  <td>
+                    {req.return_status === "not_returned" &&
+                    req.status === "approved" ? (
+                      <button
+                        className="btn-return"
+                        onClick={() => handleReturn(req.id)}
+                      >
+                        Return
+                      </button>
+                    ) : (
+                      "-"
+                    )}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
-
-      {/* Existing Borrow Requests Table */}
-      <table className="request-table">
-        <thead>
-          <tr>
-            <th>S.No</th>
-            <th>Hospital Name</th>
-            <th>Resource Type</th>
-            <th>Quantity</th>
-            <th>Urgency Level</th>
-            <th>Requested At</th>
-            <th>Updated At</th>
-            <th>Status</th>
-            <th>Due Date</th>
-            <th>Returned At</th>
-            <th>Return Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {borrowRequests.map((req, idx) => (
-            <tr key={req.id}>
-              <td>{idx + 1}</td>
-              <td>{req.toHospitalName}</td>
-              <td>
-                {iconForResourceType(req.resourceType)} {req.resourceType}
-              </td>
-              <td>{req.quantity}</td>
-              <td className={`urgency ${req.urgency_level.toLowerCase()}`}>
-                {req.urgency_level}
-              </td>
-              <td>{req.requestedAt}</td>
-              <td>{req.updatedAt}</td>
-              <td className={`status ${req.status.toLowerCase()}`}>
-                {req.status}
-              </td>
-              <td>{req.due_date || "-"}</td>
-              <td>{req.returned_at || "-"}</td>
-              <td>{req.return_status}</td>
-              <td>
-                {req.return_status === "not_returned" && req.status === "approved" ? (
-                  <button className="btn-return" onClick={() => handleReturn(req.id)}>
-                    Return
-                  </button>
-                ) : (
-                  "-"
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

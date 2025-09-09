@@ -9,7 +9,7 @@ const IncomingBorrowRequest = () => {
   const [search, setSearch] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
-  const hospitalId = localStorage.getItem("hospitalId"); // hospital from login
+  const hospitalId = localStorage.getItem("hospitalId");
 
   useEffect(() => {
     fetchRequests();
@@ -87,8 +87,8 @@ const IncomingBorrowRequest = () => {
 
   return (
     <div className="incoming-requests-page">
-      <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
       <header className="page-header">
+        <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
         <h1>Incoming Borrow Requests</h1>
       </header>
 
