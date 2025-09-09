@@ -184,6 +184,7 @@ app.get('/api/borrow_requests/:hospitalId', (req, res) => {
   });
 });
 
+
 // Create a new borrow request
 app.post('/api/borrow_requests', (req, res) => {
   const { fromHospitalId, toHospitalId, resourceType, quantity, urgency_level } = req.body;
@@ -244,18 +245,40 @@ app.get("/hospitals", (req, res) => {
   });
 });
 
-// Get resources for a specific hospital
-app.get("/api/resources/:hospitalId", (req, res) => {
-  const { hospitalId } = req.params;
-  const sql = "SELECT * FROM available_resources WHERE hospitalId = ?";
-  db.query(sql, [hospitalId], (err, results) => {
+app.get('/api/resources/:hospitalId', (req, res) => {
+  const hospitalId = req.params.hospitalId;
+
+  const query = `
+    SELECT 
+      TRIM(LOWER(resource_type)) AS resource_type,
+      SUM(total_quantity) AS total_quantity,
+      SUM(available) AS available
+    FROM available_resources
+    WHERE hospitalId = ?
+    GROUP BY TRIM(LOWER(resource_type));
+  `;
+
+  db.query(query, [hospitalId], (err, results) => {
     if (err) {
-      console.error("Error fetching resources:", err);
-      return res.status(500).json({ error: "Database error" });
+      console.error('Error fetching resources:', err);
+      return res.status(500).json({ error: 'Database error' });
     }
     res.json(results);
   });
 });
+
+
+// app.get("/api/resources/:hospitalId", (req, res) => {
+//   const { hospitalId } = req.params;
+//   const sql = "SELECT * FROM available_resources WHERE hospitalId = ?";
+//   db.query(sql, [hospitalId], (err, results) => {
+//     if (err) {
+//       console.error("Error fetching resources:", err);
+//       return res.status(500).json({ error: "Database error" });
+//     }
+//     res.json(results);
+//   });
+// });
 
 // Get equipment condition for a specific hospital
 app.get("/api/equipment/:hospitalId", (req, res) => {
@@ -281,6 +304,10 @@ app.get('/api/resources', (req, res) => {
     res.json(resourceTypes);
   });
 });
+
+
+
+
 
 app.get('/api/hospitals', (req, res) => {
   const { resourceType, minQuantity } = req.query;

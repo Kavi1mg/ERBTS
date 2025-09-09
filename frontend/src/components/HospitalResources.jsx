@@ -19,6 +19,8 @@ const HospitalResources = () => {
       try {
         const res = await fetch(`http://localhost:3001/api/resources/${hospitalId}`);
         const data = await res.json();
+        console.log("Fetched resources:", data); // ✅ Debug log
+
         setResources(data);
       } catch (err) {
         console.error("Error fetching resources:", err);
@@ -62,13 +64,13 @@ const HospitalResources = () => {
         </thead>
         <tbody>
           {filteredResources.map((res, idx) => (
-            <tr key={res.id}>
-              <td>{idx + 1}</td>
-              <td>{res.resource_type}</td>
-              <td>{res.total_quantity}</td>
-              <td>{res.available}</td>
-            </tr>
-          ))}
+           <tr key={idx}>   {/* ✅ Use index as key */}
+           <td>{idx + 1}</td>
+           <td>{res.resource_type}</td>
+           <td>{res.total_quantity}</td>
+           <td>{res.available}</td>
+           </tr>
+             ))}
           {filteredResources.length === 0 && (
             <tr>
               <td colSpan="4">No resources found</td>
