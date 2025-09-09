@@ -1,7 +1,7 @@
 .equipment-condition-page {
   width: 100vw;
-  min-height: 100vh;
-  position: fixed;
+  height: 100vh;           /* ✅ fixed height */
+  position: relative;      /* ✅ allow scrolling */
   left: 0;
   top: 0;
   display: flex;
@@ -10,7 +10,12 @@
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   text-align: center;
   z-index: 0;
+
+  /* ✅ scrolling enabled */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
 /* Back icon fixed at top-left */
 .back-icon {
   font-size: 28px;
@@ -113,19 +118,4 @@
 .btn-borrow:active {
   background: #1e40af;
   transform: translateY(0);
-}
-
-/* Back icon */
-.back-icon {
-  font-size: 28px;
-  color: #e3e7f1;
-  cursor: pointer;
-  margin-right: auto;
-  margin-bottom: 15px;
-  transition: 0.2s;
-}
-
-.back-icon:hover {
-  color: #1e40af;
-  transform: scale(1.1);
 }

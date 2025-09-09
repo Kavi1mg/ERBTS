@@ -1,8 +1,8 @@
 .prediction-page {
-  position: relative;       /* Needed for absolute positioning inside */
+  position: relative;
   width: 100vw;
   min-height: 100vh;
-  padding: 90px 1rem 4rem 1rem;  /* Top padding equal to header height to push content down */
+  padding: 90px 1rem 4rem 1rem;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: white;
@@ -13,29 +13,27 @@
   text-align: center;
 }
 
-/* Back icon */
-.back-icon {
+.prediction-page .back-icon {
   font-size: 28px;
   color: #ffffff;
   cursor: pointer;
-  position: absolute;       /* Position absolutely relative to .prediction-page */
-  top: 40px;                /* Adjust to move up/down */
-  left: 16px;               /* Position from left edge */
-  z-index: 11;              /* Above the header */
+  position: absolute;
+  top: 40px;
+  left: 16px;
+  z-index: 11;
   transition: 0.2s;
 }
 
-.back-icon:hover {
+.prediction-page .back-icon:hover {
   color: #93c5fd;
   transform: scale(1.1);
 }
 
-/* Page Header */
-.page-header {
-  position: absolute;       /* Fix header at top relative to prediction-page */
+.prediction-page .page-header {
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;             /* Full viewport width */
+  width: 100vw;
   padding: 28px 0 24px 0;
   background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
@@ -44,13 +42,12 @@
   font-size: 1.9rem;
   font-weight: 700;
   letter-spacing: 1.2px;
-  border-radius: 0 0 16px 16px;  /* Rounded bottom corners */
+  border-radius: 0 0 16px 16px;
   z-index: 2;
 }
 
-/* Move content below header/back icon */
-.content-container {
-  margin-top: 50px;         /* Adjust this for vertical spacing */
+.prediction-page .content-container {
+  margin-top: 50px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -71,7 +68,7 @@
   text-shadow: 0 0 5px rgba(37, 99, 235, 0.8);
 }
 
-.prediction-table {
+.prediction-page .prediction-table {
   width: 90%;
   max-width: 800px;
   border-collapse: collapse;
@@ -83,27 +80,28 @@
   color: #1e3a8a;
 }
 
-.prediction-table thead {
+.prediction-page .prediction-table thead {
   background: #2563eb;
   color: #ffffff;
   font-weight: 700;
   font-size: 1.1rem;
 }
 
-.prediction-table th,
-.prediction-table td {
+.prediction-page .prediction-table th,
+.prediction-page .prediction-table td {
   padding: 14px;
   font-size: 14px;
   text-align: center;
   border-bottom: 1px solid #cbd5e1;
 }
 
-.prediction-table tbody tr:hover {
+.prediction-page .prediction-table tbody tr:hover {
   background: #e0eefc;
   cursor: default;
 }
 
-.loading-message, .error-message {
+.prediction-page .loading-message,
+.prediction-page .error-message {
   font-size: 1.2rem;
   color: #dbeafe;
   margin-top: 3rem;
@@ -111,9 +109,8 @@
   text-shadow: 0 0 6px rgba(37, 99, 235, 0.8);
 }
 
-/* Responsive */
 @media (max-width: 900px) {
-  .page-header {
+  .prediction-page .page-header {
     font-size: 1.2rem;
     padding: 16px 0;
     border-radius: 0 0 8px 8px;
@@ -121,7 +118,7 @@
 }
 
 @media (max-width: 768px) {
-  .prediction-table {
+  .prediction-page .prediction-table {
     width: 100%;
     overflow-x: auto;
   }
