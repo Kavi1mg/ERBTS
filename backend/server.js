@@ -102,37 +102,112 @@ app.get('/api/incoming_requests/:hospitalId', (req, res) => {
 });
 
 // Approve a request
+// app.put('/api/borrow_requests/:id/approve', (req, res) => {
+//   const requestId = req.params.id;
+//   const { due_date } = req.body;
+
+//   const updateQuery = `
+//     UPDATE borrow_requests 
+//     SET status = 'approved', due_date = ? 
+//     WHERE id = ?;
+//   `;
+
+//   db.query(updateQuery, [due_date, requestId], (err, result) => {
+//     if (err) {
+//       console.error('Error approving request:', err);
+//       return res.status(500).json({ error: 'Database error' });
+//     }
+
+//     // Insert into transfers table
+//     const insertTransfer = `
+//       INSERT INTO transfers (requestId, fromHospitalId, toHospitalId, resourceType, quantity, status)
+//       SELECT id, fromHospitalId, toHospitalId, resourceType, quantity, 'initiated'
+//       FROM borrow_requests WHERE id = ?;
+//     `;
+//     db.query(insertTransfer, [requestId], (err2) => {
+//       if (err2) {
+//         console.error('Error inserting transfer:', err2);
+//         return res.status(500).json({ error: 'Database error' });
+//       }
+//       res.json({ success: true, message: 'Request approved and transfer created' });
+//     });
+//   });
+// });
+
 app.put('/api/borrow_requests/:id/approve', (req, res) => {
   const requestId = req.params.id;
   const { due_date } = req.body;
 
+  // First update request status
   const updateQuery = `
     UPDATE borrow_requests 
     SET status = 'approved', due_date = ? 
     WHERE id = ?;
   `;
 
-  db.query(updateQuery, [due_date, requestId], (err, result) => {
+  db.query(updateQuery, [due_date, requestId], (err) => {
     if (err) {
       console.error('Error approving request:', err);
       return res.status(500).json({ error: 'Database error' });
     }
 
-    // Insert into transfers table
-    const insertTransfer = `
-      INSERT INTO transfers (requestId, fromHospitalId, toHospitalId, resourceType, quantity, status)
-      SELECT id, fromHospitalId, toHospitalId, resourceType, quantity, 'initiated'
-      FROM borrow_requests WHERE id = ?;
+    // Fetch details of this borrow request
+    const fetchRequest = `
+      SELECT toHospitalId, resourceType, quantity
+      FROM borrow_requests
+      WHERE id = ?;
     `;
-    db.query(insertTransfer, [requestId], (err2) => {
-      if (err2) {
-        console.error('Error inserting transfer:', err2);
+
+    db.query(fetchRequest, [requestId], (err2, results) => {
+      if (err2 || results.length === 0) {
+        console.error('Error fetching borrow request:', err2);
         return res.status(500).json({ error: 'Database error' });
       }
-      res.json({ success: true, message: 'Request approved and transfer created' });
+
+      const { toHospitalId, resourceType, quantity } = results[0];
+
+      // Decrease available quantity in lender hospital
+      const updateResource = `
+        UPDATE available_resources
+        SET available = available - ?
+        WHERE hospitalId = ? AND resource_type = ? AND available >= ?;
+      `;
+
+      db.query(updateResource, [quantity, toHospitalId, resourceType, quantity], (err3) => {
+        if (err3) {
+          console.error('Error updating available resources:', err3);
+          return res.status(500).json({ error: 'Database error' });
+        }
+
+        // 🔹 Insert into historical_usage (log borrow)
+        const insertHistory = `
+          INSERT INTO historical_usage (hospitalId, resourceType, ts, used, on_hand)
+          VALUES (?, ?, NOW(), ?, (SELECT available FROM available_resources WHERE hospitalId = ? AND resource_type = ?));
+        `;
+        db.query(insertHistory, [toHospitalId, resourceType, quantity, toHospitalId, resourceType], (err4) => {
+          if (err4) console.error('Error inserting into historical_usage (approve):', err4);
+        });
+
+        // Insert into transfers table
+        const insertTransfer = `
+          INSERT INTO transfers (requestId, fromHospitalId, toHospitalId, resourceType, quantity, status)
+          SELECT id, fromHospitalId, toHospitalId, resourceType, quantity, 'initiated'
+          FROM borrow_requests WHERE id = ?;
+        `;
+
+        db.query(insertTransfer, [requestId], (err5) => {
+          if (err5) {
+            console.error('Error inserting transfer:', err5);
+            return res.status(500).json({ error: 'Database error' });
+          }
+
+          res.json({ success: true, message: 'Request approved, resources updated, transfer created, history logged' });
+        });
+      });
     });
   });
 });
+
 
 // Reject a request
 app.put('/api/borrow_requests/:id/reject', (req, res) => {
@@ -208,21 +283,81 @@ app.post('/api/borrow_requests', (req, res) => {
 });
 
 // Mark a borrow request as returned
+// app.put('/api/borrow_requests/:id/return', (req, res) => {
+//   const requestId = req.params.id;
+//   const query = `
+//     UPDATE borrow_requests 
+//     SET return_status = 'returned', returned_at = NOW(), updatedAt = NOW()
+//     WHERE id = ?;
+//   `;
+//   db.query(query, [requestId], (err, result) => {
+//     if (err) {
+//       console.error('Error updating return status:', err);
+//       return res.status(500).json({ error: 'Database error' });
+//     }
+//     res.json({ success: true, message: 'Request marked as returned' });
+//   });
+// });
+
 app.put('/api/borrow_requests/:id/return', (req, res) => {
   const requestId = req.params.id;
-  const query = `
+
+  // Update borrow request as returned
+  const updateRequest = `
     UPDATE borrow_requests 
     SET return_status = 'returned', returned_at = NOW(), updatedAt = NOW()
     WHERE id = ?;
   `;
-  db.query(query, [requestId], (err, result) => {
+
+  db.query(updateRequest, [requestId], (err) => {
     if (err) {
       console.error('Error updating return status:', err);
       return res.status(500).json({ error: 'Database error' });
     }
-    res.json({ success: true, message: 'Request marked as returned' });
+
+    // Fetch request details
+    const fetchRequest = `
+      SELECT toHospitalId, resourceType, quantity
+      FROM borrow_requests
+      WHERE id = ?;
+    `;
+
+    db.query(fetchRequest, [requestId], (err2, results) => {
+      if (err2 || results.length === 0) {
+        console.error('Error fetching request for return:', err2);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      const { toHospitalId, resourceType, quantity } = results[0];
+
+      // Add back quantity to lender hospital
+      const updateResource = `
+        UPDATE available_resources
+        SET available = available + ?
+        WHERE hospitalId = ? AND resource_type = ?;
+      `;
+
+      db.query(updateResource, [quantity, toHospitalId, resourceType], (err3) => {
+        if (err3) {
+          console.error('Error updating resources on return:', err3);
+          return res.status(500).json({ error: 'Database error' });
+        }
+
+        // 🔹 Insert into historical_usage (log return)
+        const insertHistory = `
+          INSERT INTO historical_usage (hospitalId, resourceType, ts, used, on_hand)
+          VALUES (?, ?, NOW(), ?, (SELECT available FROM available_resources WHERE hospitalId = ? AND resource_type = ?));
+        `;
+        db.query(insertHistory, [toHospitalId, resourceType, -quantity, toHospitalId, resourceType], (err4) => {
+          if (err4) console.error('Error inserting into historical_usage (return):', err4);
+        });
+
+        res.json({ success: true, message: 'Resources returned successfully, history logged' });
+      });
+    });
   });
 });
+
 
 // ================== HOSPITAL RESOURCES ==================
 

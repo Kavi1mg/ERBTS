@@ -11,9 +11,9 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-}
+} 
 
-.prediction-page .back-icon {
+.back-icon {
   font-size: 28px;
   color: #ffffff;
   cursor: pointer;
@@ -27,10 +27,10 @@
 .prediction-page .back-icon:hover {
   color: #93c5fd;
   transform: scale(1.1);
-}
-
-.prediction-page .page-header {
-  position: absolute;
+} 
+  
+.page-header {
+  position: absolute;      
   top: 0;
   left: 0;
   width: 100vw;
@@ -44,22 +44,21 @@
   letter-spacing: 1.2px;
   border-radius: 0 0 16px 16px;
   z-index: 2;
-}
-
-.prediction-page .content-container {
-  margin-top: 50px;
+} 
+ .content-container {
+  margin-top: 50px;         
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
+} 
 
-.prediction-page h1 {
+ .prediction-page h1 {
   font-size: 2.4rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
   text-shadow: 0 0 8px rgba(0, 98, 255, 0.7);
-}
+} 
 
 .prediction-page h3 {
   font-weight: 600;
@@ -85,10 +84,10 @@
   color: #ffffff;
   font-weight: 700;
   font-size: 1.1rem;
-}
+} 
 
-.prediction-page .prediction-table th,
-.prediction-page .prediction-table td {
+ .prediction-table th,
+.prediction-table td {
   padding: 14px;
   font-size: 14px;
   text-align: center;
@@ -98,27 +97,26 @@
 .prediction-page .prediction-table tbody tr:hover {
   background: #e0eefc;
   cursor: default;
-}
+} 
 
-.prediction-page .loading-message,
-.prediction-page .error-message {
+.loading-message, .error-message {
   font-size: 1.2rem;
   color: #dbeafe;
   margin-top: 3rem;
   font-weight: 600;
   text-shadow: 0 0 6px rgba(37, 99, 235, 0.8);
-}
+} 
 
 @media (max-width: 900px) {
-  .prediction-page .page-header {
+  .page-header {
     font-size: 1.2rem;
     padding: 16px 0;
     border-radius: 0 0 8px 8px;
   }
-}
+} 
 
-@media (max-width: 768px) {
-  .prediction-page .prediction-table {
+ @media (max-width: 768px) {
+  .prediction-table {
     width: 100%;
     overflow-x: auto;
   }
