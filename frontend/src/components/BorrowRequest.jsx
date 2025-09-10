@@ -22,14 +22,10 @@ const BorrowRequest = () => {
     fetchBorrowRequests();
   }, []);
 
-  // Fetch dynamic resource types from backend - corrected to handle array of strings
   const fetchAvailableResourceTypes = () => {
     fetch(`http://localhost:3001/api/resources`)
       .then((res) => res.json())
-      .then((data) => {
-        // data is an array of strings representing resource types
-        setResourceTypes(data);
-      })
+      .then((data) => setResourceTypes(data))
       .catch((err) => console.error("Error fetching resource types:", err));
   };
 
@@ -50,10 +46,7 @@ const BorrowRequest = () => {
       );
       const data = await res.json();
 
-      // Remove current hospital
       const filtered = data.filter((h) => h.hospitalId !== hospitalId);
-
-      // ✅ Remove duplicate hospitals by hospitalId
       const uniqueHospitals = Array.from(
         new Map(filtered.map((h) => [h.hospitalId, h])).values()
       );
@@ -95,7 +88,6 @@ const BorrowRequest = () => {
     }
   };
 
-  // ✅ Handle returning a borrowed resource
   const handleReturn = async (requestId) => {
     setLoading(true);
     try {
@@ -111,8 +103,6 @@ const BorrowRequest = () => {
 
       const data = await res.json();
       console.log("Return response:", data);
-
-      // Refresh borrow requests after return
       fetchBorrowRequests();
     } catch (err) {
       console.error("Error returning resource:", err);
@@ -135,10 +125,6 @@ const BorrowRequest = () => {
       default:
         return "🩺";
     }
-  };
-
-  const handleReturn = (id) => {
-    // Implement return logic here
   };
 
   return (
@@ -167,7 +153,6 @@ const BorrowRequest = () => {
           {showForm ? "Close Request Form" : "Make a Request"}
         </button>
 
-        {/* Initial Request Form */}
         {showForm && !showHospitalsTable && (
           <form className="request-form" onSubmit={handleFormSubmit}>
             <label>
@@ -214,7 +199,6 @@ const BorrowRequest = () => {
           </form>
         )}
 
-        {/* Hospital Selection Table */}
         {showForm && showHospitalsTable && (
           <div className="scrollable-table-region">
             <table className="hospital-table">
@@ -260,57 +244,61 @@ const BorrowRequest = () => {
           </div>
         )}
 
-      {/* Existing Borrow Requests Table */}
-      <table className="request-table">
-        <thead>
-          <tr>
-            <th>S.No</th>
-            <th>Hospital Name</th>
-            <th>Resource Type</th>
-            <th>Quantity</th>
-            <th>Urgency Level</th>
-            <th>Requested At</th>
-            <th>Updated At</th>
-            <th>Status</th>
-            <th>Due Date</th>
-            <th>Returned At</th>
-            <th>Return Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {borrowRequests.map((req, idx) => (
-            <tr key={req.id}>
-              <td>{idx + 1}</td>
-              <td>{req.toHospitalName}</td>
-              <td>
-                {iconForResourceType(req.resourceType)} {req.resourceType}
-              </td>
-              <td>{req.quantity}</td>
-              <td className={`urgency ${req.urgency_level.toLowerCase()}`}>
-                {req.urgency_level}
-              </td>
-              <td>{req.requestedAt}</td>
-              <td>{req.updatedAt}</td>
-              <td className={`status ${req.status.toLowerCase()}`}>
-                {req.status}
-              </td>
-              <td>{req.due_date || "-"}</td>
-              <td>{req.returned_at || "-"}</td>
-              <td>{req.return_status}</td>
-              <td>
-                {req.return_status === "not_returned" && req.status === "approved" ? (
-                  <button className="btn-return" onClick={() => handleReturn(req.id)}>
-                    Return
-                  </button>
-                ) : (
-                  "-"
-                )}
-              </td>
+        <table className="request-table">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Hospital Name</th>
+              <th>Resource Type</th>
+              <th>Quantity</th>
+              <th>Urgency Level</th>
+              <th>Requested At</th>
+              <th>Updated At</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Returned At</th>
+              <th>Return Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {borrowRequests.map((req, idx) => (
+              <tr key={req.id}>
+                <td>{idx + 1}</td>
+                <td>{req.toHospitalName}</td>
+                <td>
+                  {iconForResourceType(req.resourceType)} {req.resourceType}
+                </td>
+                <td>{req.quantity}</td>
+                <td className={`urgency ${req.urgency_level.toLowerCase()}`}>
+                  {req.urgency_level}
+                </td>
+                <td>{req.requestedAt}</td>
+                <td>{req.updatedAt}</td>
+                <td className={`status ${req.status.toLowerCase()}`}>
+                  {req.status}
+                </td>
+                <td>{req.due_date || "-"}</td>
+                <td>{req.returned_at || "-"}</td>
+                <td>{req.return_status}</td>
+                <td>
+                  {req.return_status === "not_returned" &&
+                  req.status === "approved" ? (
+                    <button
+                      className="btn-return"
+                      onClick={() => handleReturn(req.id)}
+                    >
+                      Return
+                    </button>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
