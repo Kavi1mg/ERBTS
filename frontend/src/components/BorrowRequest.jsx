@@ -129,6 +129,12 @@ const BorrowRequest = () => {
 
   return (
     <div className="borrow-request-page">
+      <IoArrowBack
+        className="back-icon"
+        onClick={() => navigate(-1)}
+        title="Go Back"
+      />
+
       <header className="page-header">
         <IoArrowBack
           className="back-icon"
@@ -138,7 +144,7 @@ const BorrowRequest = () => {
         <h1>Borrow Requests</h1>
       </header>
 
-      <div className="borrow-page-content">
+      <div className="borrow-request-content">
         <button
           className="make-request-btn"
           onClick={() => {
@@ -244,6 +250,7 @@ const BorrowRequest = () => {
           </div>
         )}
 
+        {/* ✅ Only one Borrow Requests Table kept */}
         <table className="request-table">
           <thead>
             <tr>
@@ -287,6 +294,7 @@ const BorrowRequest = () => {
                     <button
                       className="btn-return"
                       onClick={() => handleReturn(req.id)}
+                      disabled={loading}
                     >
                       Return
                     </button>

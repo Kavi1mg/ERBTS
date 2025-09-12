@@ -11,16 +11,7 @@ function Prediction() {
   const [hospital, setHospital] = useState("");
 
   useEffect(() => {
-    // Get hospitalId from localStorage after login
-    const hospitalId = localStorage.getItem("hospitalId");
-    if (!hospitalId) {
-      console.error("No hospitalId found. Please login.");
-      navigate("/login");
-      return;
-    }
-
-    // Fetch predictions from Flask API for the logged-in hospital
-    fetch(`http://localhost:5000/predict?hospitalId=${hospitalId}`)
+    fetch("http://localhost:5000/predict")
       .then(res => res.json())
       .then(data => {
         setPredictions(data.predictions);
@@ -28,20 +19,23 @@ function Prediction() {
         setHospital(data.hospitalId);
       })
       .catch(err => console.error("Error fetching predictions:", err));
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="prediction-page">
+      {/* Back Icon */}
       <IoArrowBack
         className="back-icon"
         onClick={() => navigate(-1)}
         title="Go Back"
       />
 
+      {/* Stylish Page Header */}
       <header className="page-header">
         <h1>Hospital Resource Predictions</h1>
       </header>
 
+      {/* Content Container to move content below header */}
       <div className="content-container">
         {hospital && <h3>Hospital: {hospital}</h3>}
 
