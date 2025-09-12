@@ -147,9 +147,11 @@ const BorrowRequest = () => {
         onClick={() => navigate(-1)}
         title="Go Back"
       />
+
       <header className="page-header">
         <h1>Borrow Requests</h1>
       </header>
+       <div className="borrow-request-content">
       <button
         className="make-request-btn"
         onClick={() => {
@@ -309,6 +311,7 @@ const BorrowRequest = () => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

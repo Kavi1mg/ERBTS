@@ -55,6 +55,49 @@ app.post('/api/login', (req, res) => {
   }
 });
 
+
+app.post("/register", (req, res) => {
+  const {
+    hospital_id,
+    password,
+    name,
+    address,
+    pincode,
+    phone,
+    email,
+    district,
+    state
+  } = req.body;
+
+  // First insert into login (since hospitalId is FK)
+  const loginQuery = "INSERT INTO login (hospitalId, password) VALUES (?, ?)";
+  db.query(loginQuery, [hospital_id, password], (err, result) => {
+    if (err) {
+      console.error("Error inserting into login:", err);
+      return res.status(500).json({ error: "Failed to register hospital (login)" });
+    }
+
+    // Then insert into hospital
+    const hospitalQuery = `
+      INSERT INTO hospital
+      (hospitalId, name, address, pincode, email, phone_number, district, state, password)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      hospitalQuery,
+      [hospital_id, name, address, pincode, email, phone, district, state, password],
+      (err2, result2) => {
+        if (err2) {
+          console.error("Error inserting into hospital:", err2);
+          return res.status(500).json({ error: "Failed to register hospital (hospital)" });
+        }
+        res.json({ message: "Hospital registered successfully!" });
+      }
+    );
+  });
+});
+
 // ===================== HOSPITAL API (Already Yours) =====================
 app.get('/api/hospital/:hospitalId', (req, res) => {
   const hospitalId = req.params.hospitalId;
