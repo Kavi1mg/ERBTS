@@ -12,6 +12,13 @@
   z-index: 0;
 }
 
+.borrow-request-content {
+  width: 100%;
+  height: calc(100vh - 160px); /* subtract back-icon + header + button height */
+  overflow-y: auto; /* enable vertical scroll */
+  padding: 20px;
+  box-sizing: border-box;
+}
 
 /* Back icon */
 .back-icon {
