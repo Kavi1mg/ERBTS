@@ -12,8 +12,6 @@ body {
   width: 100vw;
   background: linear-gradient(to bottom, #2b88ec, #00c6ff);
   position: relative;
-  margin: 0;
-  padding: 0;
   overflow: hidden;
 }
 
@@ -25,7 +23,6 @@ body {
   width: 80px;
   height: 80px;
 }
-
 
 .umbrella-img {
   position: absolute;
@@ -44,14 +41,18 @@ body {
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
   width: 350px;
+  z-index: 2;
 }
-
-
 
 .login-container h2.title {
   margin-bottom: 25px;
   color: #003366;
   font-size: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column; /* ✅ ensures vertical layout */
 }
 
 .login-container input[type="text"],
@@ -62,6 +63,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 14px;
+  outline: none;
 }
 
 .role-selection {
@@ -81,6 +83,7 @@ body {
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  margin-top: 10px;
 }
 
 .login-container button:hover {

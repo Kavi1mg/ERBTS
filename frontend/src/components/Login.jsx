@@ -40,13 +40,15 @@ function Login() {
 
   return (
     <div className="login-page">
+      {/* Logo + Umbrella */}
       <img src={logo} alt="logo" className="logo-img" />
       <img src={umbrella} alt="umbrella" className="umbrella-img" />
 
       <div className="login-container">
         <h2 className="title">Login</h2>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="login-form">
+          {/* User ID */}
           <input
             type="text"
             placeholder="User ID"
@@ -55,6 +57,7 @@ function Login() {
             required
           />
 
+          {/* Password */}
           <input
             type="password"
             placeholder="Password"
@@ -63,6 +66,7 @@ function Login() {
             required
           />
 
+          {/* Role Selection */}
           <div className="role-selection">
             <label>
               <input
@@ -84,9 +88,11 @@ function Login() {
             </label>
           </div>
 
+          {/* Login Button */}
           <button type="submit">Login</button>
         </form>
 
+        {/* Register Link */}
         <p
           className="register-link"
           onClick={() => navigate('/register')}

@@ -1,16 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;   /* ✅ enable horizontal scroll */
+  overflow-y: hidden; /* ✅ disable vertical scroll */
+}
+
+/* Main Page */
 .incoming-requests-page {
-  width: 100vw;
-  min-height: 100vh;   /* allow it to grow */
-  position: relative;  /* instead of fixed */
+  height: 100vh;   /* ✅ fit screen height */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   text-align: center;
+  position: relative;
   z-index: 0;
+  overflow-y: hidden;   /* ✅ no vertical scroll */
+  overflow-x: hidden;
 }
 
-/* Back icon fixed at top-left */
+/* Back icon */
 .back-icon {
   font-size: 28px;
   color: #e3e7f1;
@@ -25,18 +41,16 @@
   transform: scale(1.1);
 }
 
-/* Stylish Page Header */
+/* Page Header */
 .page-header {
   width: 100%;
   background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
   padding: 20px 0;
-  margin-bottom: 20px;
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
   text-align: center;
   color: white;
   font-size: 1.8rem;
   font-weight: 700;
-  letter-spacing: 1.2px;
   border-radius: 8px;
 }
 
@@ -47,140 +61,34 @@
   padding: 10px 14px;
   border: 1px solid #60a5fa;
   border-radius: 8px;
-  font-size: 15px;
-  outline: none;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
-  transition: 0.2s;
+  margin: 20px auto;
   text-align: center;
-  margin: 0 auto 30px auto;
 }
 
-.filter-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+/* ✅ Table wrapper allows only horizontal scrolling */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 10px;
 }
 
-/* Table Styling */
+/* Table */
 .request-table {
-  width: 90%;
-  max-width: 1200px;
+  min-width: 1200px; /* ✅ force horizontal scroll */
   border-collapse: collapse;
   background: white;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
   margin: 0 auto;
   text-align: center;
 }
 
-/* Updated header background & text color with padding and border bottom */
+/* Sticky Header */
 .request-table thead {
   background: #3b82f6;
   color: white;
   border-bottom: 3px solid #2563eb;
-}
-
-.request-table th {
-  padding: 14px;
-  font-size: 15px;
-  text-align: center;
-  color: #fcfcfd;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  user-select: none;
-}
-
-/* Table body cells */
-.request-table td {
-  padding: 12px;
-  font-size: 14px;
-  text-align: center;
-  color: #1e3a8a;
-}
-
-/* Zebra striping for rows */
-.request-table tr:nth-child(even) {
-  background: #f0f9ff;
-}
-
-/* Urgency Colors */
-.urgency.low {
-  color: #99c6e1;
-  font-weight: 600;
-}
-
-.urgency.medium {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-.urgency.high {
-  color: #1e40af;
-  font-weight: 600;
-}
-
-/* Status Colors */
-.status.pending {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-.status.approved {
-  color: #3b82f6;
-  font-weight: 600;
-}
-
-.status.rejected {
-  color: #1e40af;
-  font-weight: 600;
-}
-
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-accept,
-.btn-reject {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.btn-accept {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-accept:hover {
-  background: #2563eb;
-}
-
-.btn-reject {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-reject:hover {
-  background: #1e40af;
-}
-
-/* Inputs inside Table */
-.request-table input {
-  padding: 5px 8px;
-  font-size: 13px;
-  border-radius: 5px;
-  outline: none;
-  text-align: center;
-}
-
-.request-table input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+  position: sticky;
+  top: 0;
 }

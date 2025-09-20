@@ -100,91 +100,95 @@ const IncomingBorrowRequest = () => {
         className="filter-input"
       />
 
-      <table className="request-table">
-        <thead>
-          <tr>
-            <th onClick={() => requestSort("request_id")}>
-              S.No{getSortIndicator("request_id")}
-            </th>
-            <th onClick={() => requestSort("hospital_name")}>
-              Hospital Name{getSortIndicator("hospital_name")}
-            </th>
-            <th onClick={() => requestSort("resource_type")}>
-              Resource Type{getSortIndicator("resource_type")}
-            </th>
-            <th onClick={() => requestSort("quantity")}>
-              Quantity{getSortIndicator("quantity")}
-            </th>
-            <th onClick={() => requestSort("urgency_level")}>
-              Urgency Level{getSortIndicator("urgency_level")}
-            </th>
-            <th onClick={() => requestSort("requested_at")}>
-              Requested At{getSortIndicator("requested_at")}
-            </th>
-            <th onClick={() => requestSort("updated_at")}>
-              Updated At{getSortIndicator("updated_at")}
-            </th>
-            <th onClick={() => requestSort("status")}>
-              Status / Action{getSortIndicator("status")}
-            </th>
-            <th onClick={() => requestSort("due_date")}>
-              Due Date{getSortIndicator("due_date")}
-            </th>
-            <th onClick={() => requestSort("returned_at")}>
-              Returned At{getSortIndicator("returned_at")}
-            </th>
-            <th onClick={() => requestSort("return_status")}>
-              Return Status{getSortIndicator("return_status")}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedRequests.length > 0 ? (
-            sortedRequests.map((req, idx) => (
-              <tr key={req.request_id}>
-                <td>{idx + 1}</td>
-                <td>{req.hospital_name}</td>
-                <td>{req.resource_type}</td>
-                <td>{req.quantity}</td>
-                <td className={`urgency ${req.urgency_level?.toLowerCase()}`}>
-                  {req.urgency_level}
-                </td>
-                <td>{req.requested_at}</td>
-                <td>{req.updated_at}</td>
-                <td>
-                  {req.status === "pending" ? (
-                    <div className="action-buttons">
-                      <button
-                        className="btn-accept"
-                        onClick={() => handleApprove(req.request_id)}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        className="btn-reject"
-                        onClick={() => handleReject(req.request_id)}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  ) : (
-                    <span className={`status ${req.status?.toLowerCase()}`}>
-                      {req.status}
-                    </span>
-                  )}
-                </td>
-                <td>{req.due_date || "-"}</td>
-                <td>{req.returned_at || "-"}</td>
-                <td>{req.return_status || "-"}</td>
-              </tr>
-            ))
-          ) : (
+      <div className="table-wrapper">
+        <table className="request-table">
+          <thead>
             <tr>
-              <td colSpan="11">No requests found</td>
+              <th onClick={() => requestSort("request_id")}>
+                S.No{getSortIndicator("request_id")}
+              </th>
+              <th onClick={() => requestSort("hospital_name")}>
+                Hospital Name{getSortIndicator("hospital_name")}
+              </th>
+              <th onClick={() => requestSort("resource_type")}>
+                Resource Type{getSortIndicator("resource_type")}
+              </th>
+              <th onClick={() => requestSort("quantity")}>
+                Quantity{getSortIndicator("quantity")}
+              </th>
+              <th onClick={() => requestSort("urgency_level")}>
+                Urgency Level{getSortIndicator("urgency_level")}
+              </th>
+              <th onClick={() => requestSort("requested_at")}>
+                Requested At{getSortIndicator("requested_at")}
+              </th>
+              <th onClick={() => requestSort("updated_at")}>
+                Updated At{getSortIndicator("updated_at")}
+              </th>
+              <th onClick={() => requestSort("status")}>
+                Status / Action{getSortIndicator("status")}
+              </th>
+              <th onClick={() => requestSort("due_date")}>
+                Due Date{getSortIndicator("due_date")}
+              </th>
+              <th onClick={() => requestSort("returned_at")}>
+                Returned At{getSortIndicator("returned_at")}
+              </th>
+              <th onClick={() => requestSort("return_status")}>
+                Return Status{getSortIndicator("return_status")}
+              </th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedRequests.length > 0 ? (
+              sortedRequests.map((req, idx) => (
+                <tr key={req.request_id}>
+                  <td>{idx + 1}</td>
+                  <td>{req.hospital_name}</td>
+                  <td>{req.resource_type}</td>
+                  <td>{req.quantity}</td>
+                  <td
+                    className={`urgency ${req.urgency_level?.toLowerCase()}`}
+                  >
+                    {req.urgency_level}
+                  </td>
+                  <td>{req.requested_at}</td>
+                  <td>{req.updated_at}</td>
+                  <td>
+                    {req.status === "pending" ? (
+                      <div className="action-buttons">
+                        <button
+                          className="btn-accept"
+                          onClick={() => handleApprove(req.request_id)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          className="btn-reject"
+                          onClick={() => handleReject(req.request_id)}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      <span className={`status ${req.status?.toLowerCase()}`}>
+                        {req.status}
+                      </span>
+                    )}
+                  </td>
+                  <td>{req.due_date || "-"}</td>
+                  <td>{req.returned_at || "-"}</td>
+                  <td>{req.return_status || "-"}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="11">No requests found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
