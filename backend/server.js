@@ -12,8 +12,10 @@ const db = mysql.createConnection({
   user: 'root',
   password: 'Narmada*09',
   database: 'erbts'
+  
 });
 
+const dbPromise = db.promise();
 db.connect(err => {
   if (err) {
     console.error('Database connection failed:', err.stack);
@@ -97,6 +99,230 @@ app.post("/register", (req, res) => {
     );
   });
 });
+// ===================== HOSPITAL PROFILE API =====================
+
+// Middleware to simulate logged-in hospital (for demo)
+// In production, replace with real auth (JWT/session)
+const getLoggedHospitalId = (req) => {
+  // You can replace this with req.user.hospitalId after authentication
+  return req.query.hospitalId || 'DL_AIIMS'; // default for testing
+};
+
+// GET hospital profile
+app.get('/profile', (req, res) => {
+  const hospitalId = getLoggedHospitalId(req);
+
+  const query = `
+    SELECT hospitalId, name, address, pincode, email, phone_number AS phone, district, state 
+    FROM hospital 
+    WHERE hospitalId = ?
+  `;
+  db.query(query, [hospitalId], (err, results) => {
+    if (err) {
+      console.error('Error fetching hospital profile:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Hospital not found' });
+    }
+    res.json(results[0]);
+  });
+});
+
+// UPDATE hospital profile
+app.put('/profile', (req, res) => {
+  const hospitalId = getLoggedHospitalId(req);
+  const { name, address, pincode, email, phone, district, state } = req.body;
+
+  const query = `
+    UPDATE hospital
+    SET name = ?, address = ?, pincode = ?, email = ?, phone_number = ?, district = ?, state = ?
+    WHERE hospitalId = ?
+  `;
+  db.query(
+    query,
+    [name, address, pincode, email, phone, district, state, hospitalId],
+    (err, result) => {
+      if (err) {
+        console.error('Error updating hospital profile:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Hospital not found' });
+      }
+      res.json({ success: true, message: 'Profile updated successfully' });
+    }
+  );
+});
+
+//===== nearbyhospital based resource ====//
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// API: get hospitals with available resource nearby
+// app.get("/api/hospitals", async (req, res) => {
+//   try {
+//     const { resourceType, minQuantity = 1, hospitalId } = req.query;
+//     if (!resourceType || !hospitalId)
+//       return res.status(400).json({ error: "Missing parameters" });
+
+//     // Get current hospital location
+//     const [currentHospital] = await dbPromise.query(
+//       "SELECT latitude, longitude FROM hospital_location WHERE hospitalId = ?",
+//       [hospitalId]
+//     );
+
+//     if (currentHospital.length === 0)
+//       return res.status(404).json({ error: "Hospital not found" });
+
+//     const { latitude, longitude } = currentHospital[0];
+
+//     // Get all hospitals with the required resource and quantity
+//     const [hospitals] = await dbPromise.query(
+//       `SELECT hr.hospitalId, h.name, h.address, h.phone_number AS phone, hr.available AS quantity, hl.latitude, hl.longitude
+//        FROM available_resources hr
+//        JOIN hospital h ON hr.hospitalId = h.hospitalId
+//        JOIN hospital_location hl ON hr.hospitalId = hl.hospitalId
+//        WHERE hr.resource_type = ? AND hr.available >= ? AND hr.hospitalId != ?`,
+//       [resourceType, minQuantity, hospitalId]
+//     );
+
+//     // Sort by nearest distance
+//     const hospitalsWithDistance = hospitals.map((h) => ({
+//       ...h,
+//       distance: getDistance(latitude, longitude, h.latitude, h.longitude),
+//     }));
+
+//     hospitalsWithDistance.sort((a, b) => a.distance - b.distance);
+
+//     res.json(hospitalsWithDistance);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+// // ============== resource adding ======
+// app.post('/api/resources/:hospitalId', (req, res) => {
+//   const hospitalId = req.params.hospitalId;
+//   const { resource_type, quantity } = req.body;
+
+//   if (!resource_type || !quantity || quantity <= 0) {
+//     return res.status(400).json({ error: 'Invalid input' });
+//   }
+
+//   const selectQuery = `
+//     SELECT * FROM available_resources 
+//     WHERE hospitalId = ? AND resource_type = ?;
+//   `;
+
+//   db.query(selectQuery, [hospitalId, resource_type], (err, results) => {
+//     if (err) {
+//       console.error('Error checking resource:', err);
+//       return res.status(500).json({ error: 'Database error' });
+//     }
+
+//     if (results.length > 0) {
+//       const resource = results[0];
+
+//       // Convert to numbers before adding
+//       const newTotal = Number(resource.total_quantity) + Number(quantity);
+//       const newAvailable = Number(resource.available) + Number(quantity);
+
+//       const updateQuery = `
+//         UPDATE available_resources 
+//         SET total_quantity = ?, available = ? 
+//         WHERE id = ?;
+//       `;
+
+//       db.query(updateQuery, [newTotal, newAvailable, resource.id], (err2) => {
+//         if (err2) {
+//           console.error('Error updating resource:', err2);
+//           return res.status(500).json({ error: 'Database error' });
+//         }
+//         res.json({ message: 'Resource updated successfully' });
+//       });
+
+//     } else {
+//       const insertQuery = `
+//         INSERT INTO available_resources (hospitalId, resource_type, total_quantity, available)
+//         VALUES (?, ?, ?, ?);
+//       `;
+
+//       db.query(insertQuery, [hospitalId, resource_type, quantity, quantity], (err3) => {
+//         if (err3) {
+//           console.error('Error inserting resource:', err3);
+//           return res.status(500).json({ error: 'Database error' });
+//         }
+//         res.json({ message: 'Resource added successfully' });
+//       });
+//     }
+//   });
+// });
+app.get("/api/hospitals", async (req, res) => {
+  try {
+    const { hospitalId, resourceType, minQuantity = 1 } = req.query;
+
+    if (!hospitalId || !resourceType) {
+      return res.status(400).json({ error: "Missing hospitalId or resourceType" });
+    }
+
+    // 1️⃣ Get current hospital location
+    const [currentHospital] = await dbPromise.query(
+      "SELECT latitude, longitude FROM hospital_location WHERE hospitalId = ?",
+      [hospitalId]
+    );
+
+    if (!currentHospital || currentHospital.length === 0)
+      return res.status(404).json({ error: "Hospital not found" });
+
+    const { latitude, longitude } = currentHospital[0];
+
+    // 2️⃣ Get all hospitals with the required resource except the current hospital
+    const [hospitals] = await dbPromise.query(
+      `SELECT hr.hospitalId, h.name, h.address, h.phone_number AS phone,
+              hr.available AS quantity, hl.latitude, hl.longitude
+       FROM available_resources hr
+       JOIN hospital h ON hr.hospitalId = h.hospitalId
+       JOIN hospital_location hl ON hr.hospitalId = hl.hospitalId
+       WHERE hr.resource_type = ? AND hr.available >= ? AND hr.hospitalId != ?`,
+      [resourceType, minQuantity, hospitalId]
+    );
+
+    // 3️⃣ Compute distance for each hospital
+    const hospitalsWithDistance = hospitals.map((h) => ({
+      ...h,
+      distance: getDistance(latitude, longitude, h.latitude, h.longitude),
+    }));
+
+    // 4️⃣ Separate nearby hospitals (distance <= 10km) and others
+    const nearby = hospitalsWithDistance
+      .filter(h => h.distance <= 10)
+      .sort((a, b) => a.distance - b.distance); // closest first
+
+    const remaining = hospitalsWithDistance
+      .filter(h => h.distance > 10)
+      .sort((a, b) => a.distance - b.distance); // farther first
+
+    // 5️⃣ Return combined result: nearby first, then remaining
+    res.json([...nearby, ...remaining]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 // ===================== HOSPITAL API (Already Yours) =====================
 app.get('/api/hospital/:hospitalId', (req, res) => {

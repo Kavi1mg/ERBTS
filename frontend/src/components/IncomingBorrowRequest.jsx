@@ -51,8 +51,16 @@ const IncomingBorrowRequest = () => {
   );
 
   const sortedRequests = React.useMemo(() => {
+    let sorted = [...filteredRequests];
+    // 1️⃣ Put pending requests at the top
+    sorted.sort((a, b) => {
+      if (a.status === "pending" && b.status !== "pending") return -1;
+      if (a.status !== "pending" && b.status === "pending") return 1;
+      return 0;
+    });
+    // 2️⃣ Apply column sorting if selected
     if (sortConfig.key) {
-      const sorted = [...filteredRequests].sort((a, b) => {
+      sorted = sorted.sort((a, b) => {
         let aVal = a[sortConfig.key];
         let bVal = b[sortConfig.key];
         if (aVal === null) return 1;
@@ -65,9 +73,8 @@ const IncomingBorrowRequest = () => {
           return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
         }
       });
-      return sorted;
     }
-    return filteredRequests;
+    return sorted;
   }, [filteredRequests, sortConfig]);
 
   const requestSort = (key) => {
@@ -91,7 +98,6 @@ const IncomingBorrowRequest = () => {
         <IoArrowBack className="back-icon" onClick={() => navigate(-1)} />
         <h1>Incoming Borrow Requests</h1>
       </header>
-
       <input
         type="text"
         placeholder="🔍 Filter requests..."
@@ -99,7 +105,6 @@ const IncomingBorrowRequest = () => {
         onChange={(e) => setSearch(e.target.value)}
         className="filter-input"
       />
-
       <div className="table-wrapper">
         <table className="request-table">
           <thead>
@@ -142,14 +147,15 @@ const IncomingBorrowRequest = () => {
           <tbody>
             {sortedRequests.length > 0 ? (
               sortedRequests.map((req, idx) => (
-                <tr key={req.request_id}>
+                <tr
+                  key={req.request_id}
+                  className={req.status === "pending" ? "pending-row" : ""}
+                >
                   <td>{idx + 1}</td>
                   <td>{req.hospital_name}</td>
                   <td>{req.resource_type}</td>
                   <td>{req.quantity}</td>
-                  <td
-                    className={`urgency ${req.urgency_level?.toLowerCase()}`}
-                  >
+                  <td className={`urgency ${req.urgency_level?.toLowerCase()}`}>
                     {req.urgency_level}
                   </td>
                   <td>{req.requested_at}</td>

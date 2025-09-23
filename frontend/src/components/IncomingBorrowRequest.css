@@ -1,94 +1,134 @@
-* {
-  box-sizing: border-box;
-}
-
 html, body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: auto;   /* ✅ enable horizontal scroll */
-  overflow-y: hidden; /* ✅ disable vertical scroll */
+  overflow: hidden; /* Scroll controlled by main container */
 }
 
-/* Main Page */
 .incoming-requests-page {
-  height: 100vh;   /* ✅ fit screen height */
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
-  text-align: center;
   position: relative;
-  z-index: 0;
-  overflow-y: hidden;   /* ✅ no vertical scroll */
-  overflow-x: hidden;
+  overflow-x: auto; /* Enable horizontal scroll */
+  overflow-y: auto; /* Enable vertical scroll */
+  padding-right: 0;
+  box-sizing: border-box;
 }
 
-/* Back icon */
+/* Header stays full width and centered */
+.page-header {
+  width: 100%;
+  min-height: 100px;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  padding: 30px 0;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  color: white;
+  font-size: 2.2rem;
+  font-weight: 700;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
 .back-icon {
   font-size: 28px;
   color: #e3e7f1;
   cursor: pointer;
   transition: 0.2s;
   position: absolute;
-  top: 20px;
-  left: 20px;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .back-icon:hover {
   color: #1e40af;
-  transform: scale(1.1);
-}
-
-/* Page Header */
-.page-header {
-  width: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-  padding: 20px 0;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
-  text-align: center;
-  color: white;
-  font-size: 1.8rem;
-  font-weight: 700;
-  border-radius: 8px;
+  transform: scale(1.1) translateY(-50%);
 }
 
 /* Filter Input */
 .filter-input {
   width: 90%;
-  max-width: 500px;
+  max-width: 600px;
   padding: 10px 14px;
   border: 1px solid #60a5fa;
   border-radius: 8px;
-  margin: 20px auto;
+  margin: 0 0 24px 0;
   text-align: center;
+  display: block;
+  align-self: center;
 }
 
-/* ✅ Table wrapper allows only horizontal scrolling */
+/* Table wrapper to allow horizontal scroll */
 .table-wrapper {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 0 10px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  overflow-x: auto; /* Enable horizontal scroll */
+  overflow-y: visible;
+  box-sizing: border-box;
 }
 
-/* Table */
+/* Table as wide as needed, min width to trigger scroll */
 .request-table {
-  min-width: 1200px; /* ✅ force horizontal scroll */
+  width: 100%;
+  min-width: 1300px; /* wide enough for columns */
   border-collapse: collapse;
   background: white;
   border-radius: 10px;
-  overflow: hidden;
-  margin: 0 auto;
   text-align: center;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-/* Sticky Header */
 .request-table thead {
   background: #3b82f6;
   color: white;
   border-bottom: 3px solid #2563eb;
   position: sticky;
   top: 0;
+  z-index: 5;
+}
+
+/* Action buttons styling */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.action-buttons button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  transition: 0.2s ease;
+}
+
+.btn-accept {
+  background-color: #16a34a;
+}
+.btn-accept:hover {
+  background-color: #15803d;
+}
+
+.btn-reject {
+  background-color: #dc2626;
+}
+.btn-reject:hover {
+  background-color: #b91c1c;
 }

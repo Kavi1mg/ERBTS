@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { FaHospital, FaAmbulance, FaProcedures, FaLungs } from "react-icons/fa";
@@ -6,7 +7,7 @@ import "./BorrowRequest.css";
 
 const BorrowRequest = () => {
   const navigate = useNavigate();
-  const hospitalId = localStorage.getItem("hospitalId");
+  const hospitalId = localStorage.getItem("hospitalId"); // current hospital
   const [showForm, setShowForm] = useState(false);
   const [resourceTypes, setResourceTypes] = useState([]);
   const [resourceType, setResourceType] = useState("");
@@ -36,19 +37,20 @@ const BorrowRequest = () => {
       .catch((err) => console.error("Error fetching borrow requests:", err));
   };
 
+  // Submit request form
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!resourceType || !quantity || !urgencyLevel) return;
     setLoading(true);
+
     try {
       const res = await fetch(
-        `http://localhost:3001/api/hospitals?resourceType=${resourceType}&minQuantity=${quantity}`
+        `http://localhost:3001/api/hospitals?resourceType=${resourceType}&minQuantity=${quantity}&hospitalId=${hospitalId}`
       );
       const data = await res.json();
 
-      const filtered = data.filter((h) => h.hospitalId !== hospitalId);
       const uniqueHospitals = Array.from(
-        new Map(filtered.map((h) => [h.hospitalId, h])).values()
+        new Map(data.map((h) => [h.hospitalId, h])).values()
       );
 
       setFilteredHospitals(uniqueHospitals);
@@ -60,6 +62,7 @@ const BorrowRequest = () => {
     }
   };
 
+  // Borrow request for selected hospital
   const handleBorrowRequest = async (selectedHospital) => {
     setLoading(true);
     try {
@@ -74,6 +77,8 @@ const BorrowRequest = () => {
           urgency_level: urgencyLevel,
         }),
       });
+
+      // Reset UI
       setShowForm(false);
       setShowHospitalsTable(false);
       setResourceType("");
@@ -88,21 +93,16 @@ const BorrowRequest = () => {
     }
   };
 
+  // Return borrowed resource
   const handleReturn = async (requestId) => {
     setLoading(true);
     try {
       const res = await fetch(
         `http://localhost:3001/api/borrow_requests/${requestId}/return`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-        }
+        { method: "PUT", headers: { "Content-Type": "application/json" } }
       );
 
       if (!res.ok) throw new Error("Failed to return resource");
-
-      const data = await res.json();
-      console.log("Return response:", data);
       fetchBorrowRequests();
     } catch (err) {
       console.error("Error returning resource:", err);
@@ -111,12 +111,14 @@ const BorrowRequest = () => {
     }
   };
 
+  // Icon mapping
   const iconForResourceType = (type) => {
     switch (type.toLowerCase()) {
       case "ambulance":
         return <FaAmbulance color="#2563eb" />;
       case "ventilator":
         return <FaLungs color="#1e40af" />;
+      case "oxygen":
       case "oxygen cylinder":
         return <FaProcedures color="#3b82f6" />;
       case "icu bed":
@@ -159,6 +161,7 @@ const BorrowRequest = () => {
           {showForm ? "Close Request Form" : "Make a Request"}
         </button>
 
+        {/* Request Form */}
         {showForm && !showHospitalsTable && (
           <form className="request-form" onSubmit={handleFormSubmit}>
             <label>
@@ -176,6 +179,7 @@ const BorrowRequest = () => {
                 ))}
               </select>
             </label>
+
             <label>
               Quantity:
               <input
@@ -186,6 +190,7 @@ const BorrowRequest = () => {
                 required
               />
             </label>
+
             <label>
               Urgency Level:
               <select
@@ -199,58 +204,58 @@ const BorrowRequest = () => {
                 <option value="Low">Low</option>
               </select>
             </label>
+
             <button type="submit" className="submit-btn">
               {loading ? "Searching..." : "Submit"}
             </button>
           </form>
         )}
 
+        {/* Hospitals Nearby Table */}
         {showForm && showHospitalsTable && (
-          <div className="scrollable-table-region">
-            <table className="hospital-table">
-              <thead>
+          <table className="hospital-table">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Hospital Name</th>
+                <th>Address</th>
+                <th>Phone No</th>
+                <th>Quantity Available</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredHospitals.length === 0 ? (
                 <tr>
-                  <th>S.No</th>
-                  <th>Hospital Name</th>
-                  <th>Address</th>
-                  <th>Phone No</th>
-                  <th>Quantity Available</th>
-                  <th>Action</th>
+                  <td colSpan={6}>
+                    No nearby hospitals found with required resource.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredHospitals.length === 0 ? (
-                  <tr>
-                    <td colSpan={6}>
-                      No hospitals found with the required quantity.
+              ) : (
+                filteredHospitals.map((hosp, idx) => (
+                  <tr key={hosp.hospitalId}>
+                    <td>{idx + 1}</td>
+                    <td>{hosp.name}</td>
+                    <td>{hosp.address}</td>
+                    <td>{hosp.phone}</td>
+                    <td>{hosp.quantity}</td>
+                    <td>
+                      <button
+                        className="btn-borrow"
+                        disabled={loading}
+                        onClick={() => handleBorrowRequest(hosp)}
+                      >
+                        Borrow
+                      </button>
                     </td>
                   </tr>
-                ) : (
-                  filteredHospitals.map((hosp, idx) => (
-                    <tr key={hosp.hospitalId}>
-                      <td>{idx + 1}</td>
-                      <td>{hosp.name}</td>
-                      <td>{hosp.address}</td>
-                      <td>{hosp.phone}</td>
-                      <td>{hosp.quantity}</td>
-                      <td>
-                        <button
-                          className="btn-borrow"
-                          disabled={loading}
-                          onClick={() => handleBorrowRequest(hosp)}
-                        >
-                          Borrow
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         )}
 
-        {/* ✅ Only one Borrow Requests Table kept */}
+        {/* Existing Borrow Requests */}
         <table className="request-table">
           <thead>
             <tr>
@@ -312,3 +317,6 @@ const BorrowRequest = () => {
 };
 
 export default BorrowRequest;
+
+
+
