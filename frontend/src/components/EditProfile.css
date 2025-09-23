@@ -1,0 +1,114 @@
+/* Page background */
+.edit-page {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0062ff, #00d4ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Logo image */
+.edit-logo-img {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+/* Umbrella decorative image */
+.edit-umbrella-img {
+  width: 80px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Form container */
+.edit-container {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 30px 25px;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Heading */
+.edit-container h2 {
+  color: white;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+/* Inputs and textarea */
+.edit-container input,
+.edit-container textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #60a5fa;
+  outline: none;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: 0.2s;
+}
+
+/* Focus state */
+.edit-container input:focus,
+.edit-container textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Disabled input for hospital_id */
+.edit-container input[disabled] {
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+  color: #555;
+}
+
+/* Textarea specific */
+.edit-container textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Submit button */
+.edit-container button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-container button:hover {
+  background: linear-gradient(90deg, #1e40af, #2563eb);
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .edit-container {
+    padding: 25px 20px;
+  }
+  .edit-logo-img {
+    width: 100px;
+  }
+  .edit-umbrella-img {
+    width: 60px;
+  }
+}

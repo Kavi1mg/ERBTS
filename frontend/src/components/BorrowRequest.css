@@ -1,23 +1,36 @@
+/* Force only horizontal scrollbar, hide vertical */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;   /* ✅ single scrollbar at bottom */
+  overflow-y: hidden; /* ❌ remove vertical scrollbar */
+}
+
+/* Page wrapper */
 .borrow-request-page {
   width: 100vw;
   min-height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   text-align: center;
   z-index: 0;
+  overflow: hidden;
 }
 
 .borrow-request-content {
   width: 100%;
   height: calc(100vh - 160px); /* subtract back-icon + header + button height */
-  overflow-y: auto; /* enable vertical scroll */
+  overflow-y: auto;
   padding: 20px;
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* ✅ centers tables horizontally */
 }
 
 /* Back icon */
@@ -93,6 +106,7 @@
 .submit-btn:hover {
   background: #1e40af;
 }
+
 /* Stylish Page Header */
 .page-header {
   width: 100%;
@@ -107,6 +121,7 @@
   letter-spacing: 1.2px;
   border-radius: 8px;
 }
+
 /* Tables */
 .request-table,
 .hospital-table {
@@ -116,7 +131,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-  margin-bottom: 40px;
+  margin: 0 auto 40px auto;   /* ✅ centered horizontally */
   background: #ffffff;
 }
 .request-table thead,
@@ -125,7 +140,13 @@
   color: #ffffff;
   font-weight: 700;
 }
-.request-table th,
+.request-table th {
+  padding: 14px;
+  font-size: 14px;
+  text-align: center;
+  color: #f5f6f8;
+  border-bottom: 1px solid #cbd5e1;
+}
 .hospital-table th,
 .request-table td,
 .hospital-table td {
@@ -135,7 +156,7 @@
   color: #1e3a8a;
   border-bottom: 1px solid #cbd5e1;
 }
-.hospital-table th{
+.hospital-table th {
   padding: 14px;
   font-size: 14px;
   text-align: center;
@@ -201,7 +222,7 @@
 }
 
 /* Responsive fixes */
-@media (max-width: 768px) { 
+@media (max-width: 768px) {
   .request-form select,
   .request-form input {
     width: 100%;

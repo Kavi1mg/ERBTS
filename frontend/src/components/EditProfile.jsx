@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Register.css';
-import './Login.css'; // reuse styles
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../assets/logo.png';
 import umbrella from '../assets/umbrella.png';
+import './EditProfile.css';
 
 function EditProfile() {
   const [formData, setFormData] = useState({
@@ -47,7 +46,7 @@ function EditProfile() {
     try {
       await axios.put('http://localhost:3001/profile', formData); // API updates data
       alert('Profile updated successfully!');
-      navigate('/dashboard'); // or stay on the same page
+      navigate('/dashboard'); // navigate after update
     } catch (err) {
       console.error(err);
       alert('Update failed!');
@@ -55,11 +54,11 @@ function EditProfile() {
   };
 
   return (
-    <div className="register-page">
-      <img src={logo} alt="Logo" className="logo-img" />
-      <img src={umbrella} alt="Umbrella" className="umbrella-img" />
+    <div className="edit-page">
+      <img src={logo} alt="Logo" className="edit-logo-img" />
+      <img src={umbrella} alt="Umbrella" className="edit-umbrella-img" />
 
-      <div className="register-container">
+      <div className="edit-container">
         <h2>Edit Hospital Profile</h2>
         <form onSubmit={handleUpdate}>
           <input type="text" name="hospital_id" placeholder="Hospital ID" value={formData.hospital_id} disabled />

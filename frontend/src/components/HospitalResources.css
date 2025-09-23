@@ -1,32 +1,180 @@
 .hospital-resources-page {
   width: 100vw;
   min-height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   text-align: center;
   z-index: 0;
+  overflow-y: scroll;   /* vertical scrollbar */
+  overflow-x: auto;     /* allow horizontal scroll if needed */
 }
 
+/* Page header */
+.page-header {
+  width: 100%;
+  padding: 20px 0;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.back-icon {
+  font-size: 28px;
+  color: #e3e7f1;
+  cursor: pointer;
+  position: absolute;
+  left: 24px;
+  transition: 0.2s;
+}
+.back-icon:hover {
+  color: #1e40af;
+  transform: scale(1.1);
+}
 
 /* Page title */
-.hospital-resources-page h2 {
-  text-align: center;
-  margin-bottom: 24px;
+.hospital-resources-page h1 {
+  margin: 0;
   font-size: 30px;
   font-weight: 700;
-  color: #fff;
   letter-spacing: 1px;
 }
 
-/* Table styling */
-.hospital-table {
+/* Filter Input */
+.filter-input {
+  width: 90%;
+  max-width: 500px;
+  padding: 10px 14px;
+  border: 1px solid #60a5fa;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
+  transition: 0.2s;
+  text-align: center;
+  margin: 0 auto 30px auto;
+}
+.filter-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Add Resource button */
+.add-button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #fff;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+.add-button:hover {
+  background: linear-gradient(90deg, #1e40af, #2563eb);
+  transform: translateY(-2px);
+}
+
+/* Form container */
+.form-container {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Form inputs */
+.form-container input,
+.form-container select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #60a5fa;
+  font-size: 14px;
+  outline: none;
+  min-width: 180px;
+}
+.form-container input:focus,
+.form-container select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}
+
+/* Submit + Cancel buttons */
+.form-container button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Submit = green */
+.form-container button:first-of-type {
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: white;
+}
+.form-container button:first-of-type:hover {
+  background: linear-gradient(90deg, #059669, #047857);
+}
+
+/* Cancel = red */
+.form-container button:last-of-type {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  color: white;
+}
+.form-container button:last-of-type:hover {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+}
+
+/* Table wrapper for horizontal scrolling */
+.table-wrapper {
   width: 90%;
   max-width: 1200px;
+  overflow-x: auto;          /* enable horizontal scroll */
+  overflow-y: hidden;        /* hide vertical scroll inside wrapper */
+  margin: 0 auto 40px auto;
+  white-space: nowrap;       /* prevent table from wrapping */
+}
+
+
+/* Optional: customize horizontal scrollbar */
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(37, 99, 235, 0.5);
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+
+/* Table styling */
+.hospital-table {
+  width: max-content;        /* table grows with content */
+  min-width: 800px;          /* ensures scroll even on small tables */
   border-collapse: collapse;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 14px;
@@ -34,7 +182,7 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
   font-size: 14px;
   color: #fff;
-  backdrop-filter: blur(8px); /* glassmorphism */
+  backdrop-filter: blur(8px);
 }
 
 /* Table header */
@@ -59,55 +207,4 @@
 
 .hospital-table tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.08);
-}
-/* Filter Input */
-.filter-input {
-  width: 90%;
-  max-width: 500px;
-  padding: 10px 14px;
-  border: 1px solid #60a5fa;
-  border-radius: 8px;
-  font-size: 15px;
-  outline: none;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
-  transition: 0.2s;
-  text-align: center;
-  margin: 0 auto 30px auto;
-}
-
-.filter-inp ut:focus {
-  border-color: #2563eb;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-}
-
-/* Borrow button styling */
-.btn-borrow {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 700;
-  background: #2563eb;
-  color: #fff;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-}
-
-.btn-borrow:active {
-  background: #1e40af;
-  transform: translateY(0);
-}
-
-.back-icon {
-  font-size: 28px;
-  color: #e3e7f1;
-  cursor: pointer;
-  margin-right: auto;
-  margin-bottom: 15px;
-  transition: 0.2s;
-}
-.back-icon:hover {
-  color: #1e40af;
-  transform: scale(1.1);
 }

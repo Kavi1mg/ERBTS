@@ -1,7 +1,7 @@
 .equipment-condition-page {
   width: 100vw;
-  min-height: 100vh;
-  position: fixed;
+  height: 100vh;           /* ✅ fixed height */
+  position: relative;      /* ✅ allow scrolling */
   left: 0;
   top: 0;
   display: flex;
@@ -10,17 +10,38 @@
   background: linear-gradient(135deg, #0062ff, #00d4ff);
   text-align: center;
   z-index: 0;
+
+  /* ✅ scrolling enabled */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-/* Back icon fixed at top-left */
+
+.page-header {
+  width: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  padding: 20px 0;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  text-align: center;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  border-radius: 8px;
+  position: relative; /* keep relative so back button positions relative to header */
+}
+
 .back-icon {
   font-size: 28px;
   color: #e3e7f1;
   cursor: pointer;
   transition: 0.2s;
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  position: absolute;  /* absolute inside header */
+  top: 10px;           /* distance from top of header */
+  left: 15px;          /* distance from left of header */
+  z-index: 10;         /* ensure above header content */
 }
+
 .back-icon:hover {
   color: #1e40af;
   transform: scale(1.1);
@@ -113,19 +134,4 @@
 .btn-borrow:active {
   background: #1e40af;
   transform: translateY(0);
-}
-
-/* Back icon */
-.back-icon {
-  font-size: 28px;
-  color: #e3e7f1;
-  cursor: pointer;
-  margin-right: auto;
-  margin-bottom: 15px;
-  transition: 0.2s;
-}
-
-.back-icon:hover {
-  color: #1e40af;
-  transform: scale(1.1);
 }
