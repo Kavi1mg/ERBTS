@@ -213,62 +213,65 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // });
 
 // // ============== resource adding ======
-// app.post('/api/resources/:hospitalId', (req, res) => {
-//   const hospitalId = req.params.hospitalId;
-//   const { resource_type, quantity } = req.body;
+app.post('/api/resources/:hospitalId', (req, res) => {
+  const hospitalId = req.params.hospitalId;
+  const { resource_type, quantity } = req.body;
 
-//   if (!resource_type || !quantity || quantity <= 0) {
-//     return res.status(400).json({ error: 'Invalid input' });
-//   }
+  if (!resource_type || !quantity || quantity <= 0) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
 
-//   const selectQuery = `
-//     SELECT * FROM available_resources 
-//     WHERE hospitalId = ? AND resource_type = ?;
-//   `;
+  const selectQuery = `
+    SELECT * FROM available_resources 
+    WHERE hospitalId = ? AND resource_type = ?;
+  `;
 
-//   db.query(selectQuery, [hospitalId, resource_type], (err, results) => {
-//     if (err) {
-//       console.error('Error checking resource:', err);
-//       return res.status(500).json({ error: 'Database error' });
-//     }
+  db.query(selectQuery, [hospitalId, resource_type], (err, results) => {
+    if (err) {
+      console.error('Error checking resource:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
 
-//     if (results.length > 0) {
-//       const resource = results[0];
+    if (results.length > 0) {
+      const resource = results[0];
 
-//       // Convert to numbers before adding
-//       const newTotal = Number(resource.total_quantity) + Number(quantity);
-//       const newAvailable = Number(resource.available) + Number(quantity);
+      // Convert to numbers before adding
+      const newTotal = Number(resource.total_quantity) + Number(quantity);
+      const newAvailable = Number(resource.available) + Number(quantity);
 
-//       const updateQuery = `
-//         UPDATE available_resources 
-//         SET total_quantity = ?, available = ? 
-//         WHERE id = ?;
-//       `;
+      const updateQuery = `
+        UPDATE available_resources 
+        SET total_quantity = ?, available = ? 
+        WHERE id = ?;
+      `;
 
-//       db.query(updateQuery, [newTotal, newAvailable, resource.id], (err2) => {
-//         if (err2) {
-//           console.error('Error updating resource:', err2);
-//           return res.status(500).json({ error: 'Database error' });
-//         }
-//         res.json({ message: 'Resource updated successfully' });
-//       });
+      db.query(updateQuery, [newTotal, newAvailable, resource.id], (err2) => {
+        if (err2) {
+          console.error('Error updating resource:', err2);
+          return res.status(500).json({ error: 'Database error' });
+        }
+        res.json({ message: 'Resource updated successfully' });
+      });
 
-//     } else {
-//       const insertQuery = `
-//         INSERT INTO available_resources (hospitalId, resource_type, total_quantity, available)
-//         VALUES (?, ?, ?, ?);
-//       `;
+    } else {
+      const insertQuery = `
+        INSERT INTO available_resources (hospitalId, resource_type, total_quantity, available)
+        VALUES (?, ?, ?, ?);
+      `;
 
-//       db.query(insertQuery, [hospitalId, resource_type, quantity, quantity], (err3) => {
-//         if (err3) {
-//           console.error('Error inserting resource:', err3);
-//           return res.status(500).json({ error: 'Database error' });
-//         }
-//         res.json({ message: 'Resource added successfully' });
-//       });
-//     }
-//   });
-// });
+      db.query(insertQuery, [hospitalId, resource_type, quantity, quantity], (err3) => {
+        if (err3) {
+          console.error('Error inserting resource:', err3);
+          return res.status(500).json({ error: 'Database error' });
+        }
+        res.json({ message: 'Resource added successfully' });
+      });
+    }
+  });
+});
+
+
+
 app.get("/api/hospitals", async (req, res) => {
   try {
     const { hospitalId, resourceType, minQuantity = 1 } = req.query;
