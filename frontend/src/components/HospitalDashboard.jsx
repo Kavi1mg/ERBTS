@@ -10,7 +10,7 @@ function HospitalDashboard() {
   const [showProfile, setShowProfile] = useState(false);
   const [profile, setProfile] = useState(null);
   const hospitalId = localStorage.getItem('hospitalId');
-
+console.log('Hospital ID:', hospitalId);
   useEffect(() => {
     if (hospitalId) {
       axios.get(`http://localhost:3001/api/hospital/${hospitalId}`)
@@ -46,9 +46,7 @@ function HospitalDashboard() {
     { title: "Equipment Condition", icon: <FaTools />, path: "/equipment-tracking" },
   ];
 
-  if (!profile) {
-    return <div className="loading">Loading profile...</div>;
-  }
+  if (!profile) return <div className="loading">Loading profile...</div>;
 
   const role = localStorage.getItem('role') || 'N/A';
 
@@ -77,6 +75,7 @@ function HospitalDashboard() {
           )}
         </div>
       </div>
+
       <div className="dashboard-grid">
         {cards.map((card, i) => (
           <div 
@@ -91,6 +90,7 @@ function HospitalDashboard() {
           </div>
         ))}
       </div>
+
       <footer className="dashboard-footer">
         <p>© ERBTS</p>
       </footer>
@@ -99,6 +99,3 @@ function HospitalDashboard() {
 }
 
 export default HospitalDashboard;
-
-
-
