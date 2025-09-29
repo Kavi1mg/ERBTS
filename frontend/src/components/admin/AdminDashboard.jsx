@@ -20,7 +20,6 @@ function AdminDashboard() {
     role: "Admin",
   });
 
-  // Hospital list with IDs and names
   const hospitals = [
     { id: "TN_APOLLO", name: "Apollo Hospital" },
     { id: "TN_BILLROTH", name: "Billroth Hospital" },
@@ -30,13 +29,9 @@ function AdminDashboard() {
     { id: "TN_GGH", name: "Government General Hospital" },
   ];
 
-  // The selected hospital ID
   const [selectedHospital, setSelectedHospital] = useState("");
-
-  // Toggle hospitals dropdown
   const [showHospitalDropdown, setShowHospitalDropdown] = useState(false);
 
-  // Sample hospital-specific data examples (replace real dynamic data)
   const hospitalDataMap = {
     TN_APOLLO: {
       barDataHospitals: [
@@ -98,11 +93,9 @@ function AdminDashboard() {
         { name: "Used", value: 25 },
       ],
     },
-
-    // add other hospitals accordingly ...
+    // add other hospitals here...
   };
 
-  // Use selected hospital data or fallback to empty data
   const {
     barDataHospitals = [],
     pieDataRequests = [],
@@ -111,52 +104,97 @@ function AdminDashboard() {
     donutData = [],
   } = hospitalDataMap[selectedHospital] || {};
 
-  // Logout handler
   const handleLogout = () => {
     localStorage.clear();
     alert("Logged out successfully!");
     navigate("/");
   };
 
-  // Save profile handler
   const handleSave = () => {
     alert("Profile updated!");
     setIsEditing(false);
     setShowProfile(false);
   };
 
+  // Color array updating green to purple in pie chart
+  const pieColors = ["#BA55D3", "#FFD700", "#FF6347"];
+
   return (
     <div className="admin-dashboard-page">
       <div className="page-header">
         <img src={logo} alt="Logo" className="logo" />
         <h1>Admin Dashboard</h1>
-        <div className="profile-icon" onClick={() => setShowProfile(!showProfile)}>👤</div>
+        <div className="profile-icon" onClick={() => setShowProfile(!showProfile)}>
+          👤
+        </div>
 
         {showProfile && (
           <div className="profile-dropdown">
             {!isEditing ? (
               <>
                 <div className="profile-info">
-                  <p><strong>ID:</strong> {profile.id}</p>
-                  <p><strong>Name:</strong> {profile.name}</p>
-                  <p><strong>Email:</strong> {profile.email}</p>
-                  <p><strong>Phone:</strong> {profile.phone_number}</p>
-                  <p><strong>Role:</strong> {profile.role}</p>
+                  <p>
+                    <strong>ID:</strong> {profile.id}
+                  </p>
+                  <p>
+                    <strong>Name:</strong> {profile.name}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {profile.email}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {profile.phone_number}
+                  </p>
+                  <p>
+                    <strong>Role:</strong> {profile.role}
+                  </p>
                 </div>
                 <div className="profile-buttons">
-                  <button className="btn btn-primary btn-sm" onClick={() => setIsEditing(true)}>Edit</button>
-                  <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Edit
+                  </button>
+                  <button className="btn btn-danger btn-sm" onClick={handleLogout}>
+                    Logout
+                  </button>
                 </div>
               </>
             ) : (
               <div className="profile-edit-card">
                 <h3>Edit Profile</h3>
-                <input type="text" value={profile.name} onChange={e => setProfile({ ...profile, name: e.target.value })} placeholder="Name" />
-                <input type="email" value={profile.email} onChange={e => setProfile({ ...profile, email: e.target.value })} placeholder="Email" />
-                <input type="text" value={profile.phone_number} onChange={e => setProfile({ ...profile, phone_number: e.target.value })} placeholder="Phone" />
+                <input
+                  type="text"
+                  value={profile.name}
+                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  placeholder="Name"
+                />
+                <input
+                  type="email"
+                  value={profile.email}
+                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                  placeholder="Email"
+                />
+                <input
+                  type="text"
+                  value={profile.phone_number}
+                  onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
+                  placeholder="Phone"
+                />
                 <div className="profile-buttons">
-                  <button className="btn btn-success btn-sm" onClick={handleSave}>Save</button>
-                  <button className="btn btn-danger btn-sm" onClick={() => setIsEditing(false)}>Cancel</button>
+                  <button
+                    className="btn btn-success btn-sm"
+                    onClick={handleSave}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             )}
@@ -164,31 +202,44 @@ function AdminDashboard() {
         )}
       </div>
 
-      {/* Dashboard cards section and hospitals button */}
       <div className="dashboard-grid">
-        <div className="card shadow-sm dashboard-card" onClick={() => navigate("/manage-hospitals")}>
+        <div
+          className="card shadow-sm dashboard-card"
+          onClick={() => navigate("/manage-hospitals")}
+        >
           <div className="card-body d-flex flex-column align-items-center justify-content-center">
-            <div className="card-icon"><FaHospital /></div>
+            <div className="card-icon">
+              <FaHospital />
+            </div>
             <h5 className="card-title mt-2">Manage Hospitals</h5>
           </div>
         </div>
 
         <div style={{ marginTop: 15, width: "200px" }}>
-          <button className="btn btn-outline-light" onClick={() => setShowHospitalDropdown(!showHospitalDropdown)}>
+          <button
+            className="btn btn-outline-light"
+            onClick={() => setShowHospitalDropdown(!showHospitalDropdown)}
+          >
             Hospitals
           </button>
+
           {showHospitalDropdown && (
-            <select className="form-select mt-2" onChange={e => setSelectedHospital(e.target.value)} value={selectedHospital}>
+            <select
+              className="form-select mt-2"
+              onChange={(e) => setSelectedHospital(e.target.value)}
+              value={selectedHospital}
+            >
               <option value="">Select a Hospital</option>
-              {hospitals.map(h => (
-                <option key={h.id} value={h.id}>{h.name}</option>
+              {hospitals.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.name}
+                </option>
               ))}
             </select>
           )}
         </div>
       </div>
 
-      {/* Graphs display */}
       <div className="charts-main-container">
         <div className="charts-row">
           <div className="chart-wrapper">
@@ -196,7 +247,7 @@ function AdminDashboard() {
             <BarChart width={400} height={300} data={barDataHospitals}>
               <XAxis dataKey="month" stroke="#fff" />
               <YAxis stroke="#fff" />
-              <Tooltip contentStyle={{ backgroundColor: '#222', color: '#fff' }} />
+              <Tooltip contentStyle={{ backgroundColor: "#222", color: "#fff" }} />
               <Legend wrapperStyle={{ color: "#fff" }} />
               <Bar dataKey="hospitals" fill="#FF4500" />
             </BarChart>
@@ -205,12 +256,23 @@ function AdminDashboard() {
           <div className="chart-wrapper">
             <h3>Requests Status</h3>
             <PieChart width={400} height={300}>
-              <Pie data={pieDataRequests} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={{ fill: "#fff" }}>
+              <Pie
+                data={pieDataRequests}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label={{ fill: "#fff" }}
+              >
                 {pieDataRequests.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={["#00CED1", "#FFD700", "#FF6347"][index % 3]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={pieColors[index % pieColors.length]}
+                  />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ backgroundColor: '#222', color: '#fff' }} />
+              <Tooltip contentStyle={{ backgroundColor: "#222", color: "#fff" }} />
               <Legend wrapperStyle={{ color: "#fff" }} />
             </PieChart>
           </div>
@@ -222,7 +284,7 @@ function AdminDashboard() {
             <BarChart width={400} height={300} data={stackedBarData}>
               <XAxis dataKey="hospital" stroke="#fff" />
               <YAxis stroke="#fff" />
-              <Tooltip contentStyle={{ backgroundColor: '#222', color: '#fff' }} />
+              <Tooltip contentStyle={{ backgroundColor: "#222", color: "#fff" }} />
               <Legend wrapperStyle={{ color: "#fff" }} />
               <Bar dataKey="Approved" stackId="a" fill="#1E90FF" />
               <Bar dataKey="Pending" stackId="a" fill="#32CD32" />
@@ -235,7 +297,7 @@ function AdminDashboard() {
             <BarChart width={400} height={300} data={resourceUsageData}>
               <XAxis dataKey="hospital" stroke="#fff" />
               <YAxis stroke="#fff" />
-              <Tooltip contentStyle={{ backgroundColor: '#222', color: '#fff' }} />
+              <Tooltip contentStyle={{ backgroundColor: "#222", color: "#fff" }} />
               <Bar dataKey="used" fill="#FFE4B5" />
             </BarChart>
           </div>
@@ -245,12 +307,24 @@ function AdminDashboard() {
           <div className="chart-wrapper">
             <h3>Resource Availability</h3>
             <PieChart width={400} height={300}>
-              <Pie data={donutData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={80} label={{ fill: "#fff" }}>
+              <Pie
+                data={donutData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={80}
+                label={{ fill: "#fff" }}
+              >
                 {donutData.map((entry, index) => (
-                  <Cell key={`cell-donut-${index}`} fill={["#00BFFF", "#FF8C00"][index % 2]} />
+                  <Cell
+                    key={`cell-donut-${index}`}
+                    fill={["#00BFFF", "#FF8C00"][index % 2]}
+                  />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ backgroundColor: '#222', color: '#fff' }} />
+              <Tooltip contentStyle={{ backgroundColor: "#222222ff", color: "#ffffff" }} />
             </PieChart>
           </div>
         </div>
