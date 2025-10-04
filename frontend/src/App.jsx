@@ -10,13 +10,14 @@ import EquipmentCondition from './components/EquipmentCondition';
 import Prediction from './components/prediction';
 import EditProfile from './components/EditProfile'; 
 import NearbyHospitals from './components/NearbyHospitals'; // ✅ added import
-
+import AdminDashboard from "./components/AdminDashboard";
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
+        <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/HospitalDashboard" element={<HospitalDashboard />} />
         <Route path="/borrow-request" element={<BorrowRequest />} />
         <Route path="/hospital-resources" element={<HospitalResources />} />       

@@ -10,7 +10,7 @@ app.use(cors());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'KAVI@123mg',
   database: 'erbts'
 });
 
@@ -53,9 +53,8 @@ function getDistance(lat1, lon1, lat2, lon2) {
 
 // Middleware placeholder for logged-in hospital simulation
 const getLoggedHospitalId = (req) => {
-  return req.query.hospitalId || 'DL_AIIMS'; // default for testing
+  return req.query.hospitalId; // default for testing
 };
-
 // LOGIN API
 app.post('/api/login', (req, res) => {
   const { role, hospitalId, password } = req.body;
@@ -87,6 +86,7 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid role' });
   }
 });
+
 
 // REGISTER HOSPITAL
 app.post("/register", (req, res) => {
@@ -124,46 +124,7 @@ app.post("/register", (req, res) => {
   });
 });
 
-// HOSPITAL PROFILE APIs
-app.get('/profile', (req, res) => {
-  const hospitalId = getLoggedHospitalId(req);
-  const query = `
-    SELECT hospitalId, name, address, pincode, email, phone_number AS phone, district, state 
-    FROM hospital 
-    WHERE hospitalId = ?
-  `;
-  db.query(query, [hospitalId], (err, results) => {
-    if (err) {
-      console.error('Error fetching hospital profile:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Hospital not found' });
-    }
-    res.json(results[0]);
-  });
-});
 
-app.put('/profile', (req, res) => {
-  const hospitalId = getLoggedHospitalId(req);
-  const { name, address, pincode, email, phone, district, state } = req.body;
-
-  const query = `
-    UPDATE hospital
-    SET name = ?, address = ?, pincode = ?, email = ?, phone_number = ?, district = ?, state = ?
-    WHERE hospitalId = ?
-  `;
-  db.query(query, [name, address, pincode, email, phone, district, state, hospitalId], (err, result) => {
-    if (err) {
-      console.error('Error updating hospital profile:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Hospital not found' });
-    }
-    res.json({ success: true, message: 'Profile updated successfully' });
-  });
-});
 
 // RESOURCE MANAGEMENT
 
@@ -313,6 +274,93 @@ app.get('/api/hospitals', (req, res) => {
     res.json(results);
   });
 });
+
+
+// const axios = require('axios');
+
+// // Cache for city coordinates
+// const cityCache = {};
+
+app.get('/api/nearby-hospitals-map/:hospitalId', (req, res) => {
+  const { hospitalId } = req.params;
+
+  // 1. Get current hospital
+  db.query(
+    "SELECT hospitalId, name, district, address FROM hospital WHERE hospitalId = ?",
+    [hospitalId],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+      if (result.length === 0) return res.status(404).json({ message: "Hospital not found" });
+
+      const currentHospital = result[0];
+      const district = currentHospital.district;
+
+      // 2. Choose default map center for each district (hardcoded for simplicity)
+      // 👉 you can expand this dictionary for your districts
+      const districtCenters = {
+        "Chennai": { lat: 13.0827, lng: 80.2707 },
+        "Madurai": { lat: 9.9252, lng: 78.1198 },
+        "Coimbatore": { lat: 11.0168, lng: 76.9558 },
+        "Trichy": { lat: 10.7905, lng: 78.7047 }
+      };
+
+      const center = districtCenters[district] || { lat: 13.0827, lng: 80.2707 }; // fallback = Chennai
+
+      // 3. Fetch hospitals in the same district (excluding self)
+      db.query(
+        "SELECT hospitalId, name, address FROM hospital WHERE district = ? AND hospitalId != ?",
+        [district, hospitalId],
+        (err2, nearbyHospitals) => {
+          if (err2) return res.status(500).json(err2);
+
+          // Fake lat/lng offsets just for visualization on map
+          const hospitalsWithOffset = nearbyHospitals.map((h, i) => ({
+            ...h,
+            lat: center.lat + 0.01 * (i + 1),
+            lng: center.lng + 0.01 * (i + 1)
+          }));
+
+          res.json({
+            currentHospital: {
+              ...currentHospital,
+              lat: center.lat,
+              lng: center.lng
+            },
+            center,
+            nearbyHospitals: hospitalsWithOffset
+          });
+        }
+      );
+    }
+  );
+});
+
+
+
+// // server.js
+// app.get("/nearby-hospitals/:hospitalId", (req, res) => {
+//   const { hospitalId } = req.params;
+
+//   const queryHospital = "SELECT name, district FROM hospital WHERE hospitalId = ?";
+//   db.query(queryHospital, [hospitalId], (err, result) => {
+//     if (err) return res.status(500).json(err);
+//     if (result.length === 0) return res.status(404).json({ message: "Hospital not found" });
+
+//     const currentHospital = result[0];
+
+//     const queryNearby = `
+//       SELECT hospitalId, name, district, address
+//       FROM hospital
+//       WHERE district = ? AND hospitalId != ?
+//     `;
+
+//     db.query(queryNearby, [currentHospital.district, hospitalId], (err2, nearby) => {
+//       if (err2) return res.status(500).json(err2);
+
+//       res.json({ currentHospital, nearbyHospitals: nearby });
+//     });
+//   });
+// });
 
 // Get nearby hospitals with resource filtering and distance sorting
 app.get("/api/hospitals/nearby", async (req, res) => {
