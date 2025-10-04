@@ -224,21 +224,12 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-<<<<<<< HEAD
-      if (res.data.success) {
-        localStorage.setItem('hospitalId', res.data.hospitalId);
-        localStorage.setItem('role', res.data.role);
-
-        if (res.data.role === 'admin') navigate('/AdminDashboard');
-        else navigate('/HospitalDashboard');
-=======
     // Admin hardcoded login check
     if (role === 'admin') {
       if (hospitalId === 'admin001' && password === 'admin123') {
         localStorage.setItem('hospitalId', 'admin001');
         localStorage.setItem('role', 'admin');
         navigate('/adminPanel');
->>>>>>> a9ad309f862eaea35ea96564bb3a3facb4153838
       } else {
         alert('Invalid admin credentials');
       }
@@ -283,10 +274,7 @@ function Login() {
             onChange={(e) => setHospitalId(e.target.value)}
             required
           />
-<<<<<<< HEAD
-=======
           {/* Password */}
->>>>>>> a9ad309f862eaea35ea96564bb3a3facb4153838
           <input
             type="password"
             placeholder="Password"
@@ -319,10 +307,7 @@ function Login() {
           <button type="submit">Login</button>
         </form>
 
-<<<<<<< HEAD
-=======
         {/* Register Link */}
->>>>>>> a9ad309f862eaea35ea96564bb3a3facb4153838
         <p className="register-link" onClick={() => navigate('/register')}>
           Register
         </p>
