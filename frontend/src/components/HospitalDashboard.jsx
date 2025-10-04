@@ -333,4 +333,8 @@ console.log('Hospital ID:', hospitalId);
   );
 }
 
+<<<<<<< HEAD
 export default HospitalDashboard;
+=======
+export default HospitalDashboard;
+>>>>>>> a9ad309f862eaea35ea96564bb3a3facb4153838

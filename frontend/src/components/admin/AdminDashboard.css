@@ -1,0 +1,19 @@
+.btn-outline-light {
+  color: white;
+  background-color: transparent;
+  border: 1px solid white;
+}
+
+.btn-outline-light:hover {
+  background-color: black !important;
+  color: white !important;
+  cursor: pointer;
+}
+
+.chart-wrapper h3 {
+  background-color: transparent !important;
+  color: white !important;
+  margin-bottom: 12px;
+  font-size: 1.2rem;
+  text-align: center;
+}
