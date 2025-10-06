@@ -9,13 +9,9 @@ import IncomingBorrowRequest from './components/IncomingBorrowRequest';
 import EquipmentCondition from './components/EquipmentCondition';
 import Prediction from './components/prediction';
 import NearbyHospitals from './components/NearbyHospitals'; // ✅ added import
-<<<<<<< HEAD
-import AdminDashboard from "./components/AdminDashboard";
-=======
 import AdminDashboard from "./components/admin/AdminDashboard";
 import ManageHospitals from "./components/admin/ManageHospitals";
 
->>>>>>> a9ad309f862eaea35ea96564bb3a3facb4153838
 const App = () => {
   return (
     <Router>

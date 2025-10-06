@@ -1,3 +1,4 @@
+ 
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -10,11 +11,7 @@ app.use(cors());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-<<<<<<< HEAD
   password: 'KAVI@123mg',
-=======
-  password: 'Narmada*09',
->>>>>>> a9ad309f862eaea35ea96564bb3a3facb4153838
   database: 'erbts'
 });
 
@@ -27,6 +24,67 @@ db.connect(err => {
   }
   console.log('Connected to MySQL');
 });
+
+// if using Node.js 18+, fetch is built-in
+
+// Function to get lat/lng from an address
+// async function geocodeAddress(address) {
+//   try {
+//     const response = await fetch(
+//       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+//     );
+//     const data = await response.json();
+//     if (data[0]) {
+//       return {
+//         lat: parseFloat(data[0].lat),
+//         lng: parseFloat(data[0].lon),
+//       };
+//     }
+//     return null; // address not found
+//   } catch (err) {
+//     console.error("Geocoding error:", err);
+//     return null;
+//   }
+// }
+
+// app.get('/api/nearby-hospitals-map/:hospitalId', async (req, res) => {
+//   const { hospitalId } = req.params;
+
+//   // 1. Get current hospital
+//   db.query(
+//     "SELECT hospitalId, name, address, contact, email FROM hospital WHERE hospitalId = ?",
+//     [hospitalId],
+//     async (err, result) => {
+//       if (err) return res.status(500).json(err);
+//       if (result.length === 0) return res.status(404).json({ message: "Hospital not found" });
+
+//       const currentHospital = result[0];
+
+//       // 2. Fetch nearby hospitals in same district
+//       db.query(
+//         "SELECT hospitalId, name, address, contact, email FROM hospital WHERE district = ? AND hospitalId != ?",
+//         [currentHospital.district, hospitalId],
+//         async (err2, nearbyHospitals) => {
+//           if (err2) return res.status(500).json(err2);
+
+//           // 3. Geocode all hospitals
+//           const geocodedCurrent = await geocodeAddress(currentHospital.address);
+//           const geocodedNearby = await Promise.all(
+//             nearbyHospitals.map(async (h) => {
+//               const coords = await geocodeAddress(h.address);
+//               return { ...h, ...coords };
+//             })
+//           );
+
+//           res.json({
+//             currentHospital: { ...currentHospital, ...geocodedCurrent },
+//             nearbyHospitals: geocodedNearby
+//           });
+//         }
+//       );
+//     }
+//   );
+// });
 
 // Utility to format date/time as "YYYY-MM-DD HH:mm:ss"
 function formatDateTime(date) {
@@ -280,17 +338,13 @@ app.get('/api/hospitals', (req, res) => {
 });
 
 
-// const axios = require('axios');
-
-// // Cache for city coordinates
-// const cityCache = {};
 
 app.get('/api/nearby-hospitals-map/:hospitalId', (req, res) => {
   const { hospitalId } = req.params;
 
   // 1. Get current hospital
   db.query(
-    "SELECT hospitalId, name, district, address FROM hospital WHERE hospitalId = ?",
+    "SELECT hospitalId, name, district, address, phone_number,email FROM hospital WHERE hospitalId = ?",
     [hospitalId],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -312,7 +366,7 @@ app.get('/api/nearby-hospitals-map/:hospitalId', (req, res) => {
 
       // 3. Fetch hospitals in the same district (excluding self)
       db.query(
-        "SELECT hospitalId, name, address FROM hospital WHERE district = ? AND hospitalId != ?",
+        "SELECT hospitalId, name, address, phone_number,email FROM hospital WHERE district = ? AND hospitalId != ?",
         [district, hospitalId],
         (err2, nearbyHospitals) => {
           if (err2) return res.status(500).json(err2);
@@ -320,10 +374,15 @@ app.get('/api/nearby-hospitals-map/:hospitalId', (req, res) => {
           // Fake lat/lng offsets just for visualization on map
           const hospitalsWithOffset = nearbyHospitals.map((h, i) => ({
             ...h,
-            lat: center.lat + 0.01 * (i + 1),
-            lng: center.lng + 0.01 * (i + 1)
-          }));
+            // lat: center.lat + 0.01 * (i + 1),
+            // lng: center.lng + 0.01 * (i + 1)
+            lat: center.lat + 0.001 * (i + 1),
+lng: center.lng + 0.001 * (i + 1)
 
+          }));
+           console.log("🟢 District:", district);
+          console.log("🗺️ Center:", center);
+          console.log("🏥 Nearby Hospitals (with offset):", hospitalsWithOffset);
           res.json({
             currentHospital: {
               ...currentHospital,
@@ -339,32 +398,6 @@ app.get('/api/nearby-hospitals-map/:hospitalId', (req, res) => {
   );
 });
 
-
-
-// // server.js
-// app.get("/nearby-hospitals/:hospitalId", (req, res) => {
-//   const { hospitalId } = req.params;
-
-//   const queryHospital = "SELECT name, district FROM hospital WHERE hospitalId = ?";
-//   db.query(queryHospital, [hospitalId], (err, result) => {
-//     if (err) return res.status(500).json(err);
-//     if (result.length === 0) return res.status(404).json({ message: "Hospital not found" });
-
-//     const currentHospital = result[0];
-
-//     const queryNearby = `
-//       SELECT hospitalId, name, district, address
-//       FROM hospital
-//       WHERE district = ? AND hospitalId != ?
-//     `;
-
-//     db.query(queryNearby, [currentHospital.district, hospitalId], (err2, nearby) => {
-//       if (err2) return res.status(500).json(err2);
-
-//       res.json({ currentHospital, nearbyHospitals: nearby });
-//     });
-//   });
-// });
 
 // Get nearby hospitals with resource filtering and distance sorting
 app.get("/api/hospitals/nearby", async (req, res) => {

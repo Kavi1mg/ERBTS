@@ -1,50 +1,50 @@
-.nearby-hospitals-page {
-  width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #0062ff, #00d4ff);
-  text-align: center;
-  z-index: 0;
-  overflow-y: scroll;    /* vertical scrollbar */
-  overflow-x: auto;      /* allow horizontal scroll if needed */
+/* Container for map and table */
+.nearby-hospitals-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
 }
 
-/* Page header */
-.map-page-header {
+/* Map styles */
+.hospital-map {
+  height: 500px;
   width: 100%;
-  padding: 20px 0;
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  border: 2px solid #ccc;
+  border-radius: 8px;
   margin-bottom: 20px;
 }
 
-/* Back icon */
-.map-back-icon {
-  font-size: 28px;
-  color: #e0f2fe;       /* light blue */
-  cursor: pointer;
-  position: absolute;
-  left: 24px;
-  transition: 0.2s;
+/* Table styles */
+.hospital-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
 }
 
-.map-back-icon:hover {
-  color: #60a5fa;       /* brighter blue hover */
-  transform: scale(1.1);
+.hospital-table th,
+.hospital-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
 }
 
-/* Page title */
-.nearby-hospitals-page h1 {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: 1px;
+/* Make column headers visible */
+.hospital-table th {
+  background-color: #007bff; /* header background */
+  color: #fff;               /* header text color */
+  font-weight: bold;
+}
+
+.hospital-table tr:nth-child(even) {
+  background-color: #f9f9f9; /* alternate row color */
+}
+
+.hospital-table tr:hover {
+  background-color: #e6f7ff;
+}
+
+/* Heading */
+.nearby-hospitals-container h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #333;
 }
