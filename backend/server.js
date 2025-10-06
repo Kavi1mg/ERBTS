@@ -25,67 +25,6 @@ db.connect(err => {
   console.log('Connected to MySQL');
 });
 
-// if using Node.js 18+, fetch is built-in
-
-// Function to get lat/lng from an address
-// async function geocodeAddress(address) {
-//   try {
-//     const response = await fetch(
-//       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
-//     );
-//     const data = await response.json();
-//     if (data[0]) {
-//       return {
-//         lat: parseFloat(data[0].lat),
-//         lng: parseFloat(data[0].lon),
-//       };
-//     }
-//     return null; // address not found
-//   } catch (err) {
-//     console.error("Geocoding error:", err);
-//     return null;
-//   }
-// }
-
-// app.get('/api/nearby-hospitals-map/:hospitalId', async (req, res) => {
-//   const { hospitalId } = req.params;
-
-//   // 1. Get current hospital
-//   db.query(
-//     "SELECT hospitalId, name, address, contact, email FROM hospital WHERE hospitalId = ?",
-//     [hospitalId],
-//     async (err, result) => {
-//       if (err) return res.status(500).json(err);
-//       if (result.length === 0) return res.status(404).json({ message: "Hospital not found" });
-
-//       const currentHospital = result[0];
-
-//       // 2. Fetch nearby hospitals in same district
-//       db.query(
-//         "SELECT hospitalId, name, address, contact, email FROM hospital WHERE district = ? AND hospitalId != ?",
-//         [currentHospital.district, hospitalId],
-//         async (err2, nearbyHospitals) => {
-//           if (err2) return res.status(500).json(err2);
-
-//           // 3. Geocode all hospitals
-//           const geocodedCurrent = await geocodeAddress(currentHospital.address);
-//           const geocodedNearby = await Promise.all(
-//             nearbyHospitals.map(async (h) => {
-//               const coords = await geocodeAddress(h.address);
-//               return { ...h, ...coords };
-//             })
-//           );
-
-//           res.json({
-//             currentHospital: { ...currentHospital, ...geocodedCurrent },
-//             nearbyHospitals: geocodedNearby
-//           });
-//         }
-//       );
-//     }
-//   );
-// });
-
 // Utility to format date/time as "YYYY-MM-DD HH:mm:ss"
 function formatDateTime(date) {
   if (!date) return null;
