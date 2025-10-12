@@ -1,10 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
+import axios from "axios";
 import "./ManageHospitals.css";
 
 function ManageHospitals() {
   const navigate = useNavigate();
+  const [hospitals, setHospitals] = useState([]);
+  const [hospitalDetails, setHospitalDetails] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const hResponse = await axios.get("http://localhost:3001/hospitals");
+        const hospitalArray = Object.entries(hResponse.data).map(([id, name]) => ({ hospitalId: id, name }));
+
+        // Initialize details
+        const details = {};
+
+        for (const hospital of hospitalArray) {
+          const [borrowRes, incomingRes, resourceRes] = await Promise.all([
+            axios.get(`http://localhost:3001/api/borrow_requests/${hospital.hospitalId}`),
+            axios.get(`http://localhost:3001/api/incoming_requests/${hospital.hospitalId}`),
+            axios.get(`http://localhost:3001/api/resources/${hospital.hospitalId}`)
+          ]);
+
+          details[hospital.hospitalId] = {
+            borrowRequestsMade: borrowRes.data.length,
+            requestsReceived: incomingRes.data.length,
+            availableResources: resourceRes.data.reduce((acc, cur) => acc + (cur.available || 0), 0)
+          };
+        }
+        setHospitals(hospitalArray);
+        setHospitalDetails(details);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="manage-hospitals-page">
@@ -25,7 +59,28 @@ function ManageHospitals() {
             </tr>
           </thead>
           <tbody>
-            {/* Empty table body */}
+            {hospitals.length === 0 && (
+              <tr>
+                <td colSpan="5">Loading hospitals...</td>
+              </tr>
+            )}
+            {hospitals.map(h => {
+              const details = hospitalDetails[h.hospitalId] || {};
+              return (
+                <tr key={h.hospitalId}>
+                  <td>{h.name}</td>
+                  <td>{details.borrowRequestsMade ?? "-"}</td>
+                  <td>{details.requestsReceived ?? "-"}</td>
+                  <td>{details.availableResources ?? "-"}</td>
+                  <td>
+                    {/* Location can be added if you want - for now just 'See on map' text*/}
+                    <button onClick={() => alert('Map feature coming soon!')}>
+                      View Location
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

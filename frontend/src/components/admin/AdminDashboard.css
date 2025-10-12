@@ -1,19 +1,253 @@
-.btn-outline-light {
-  color: white;
-  background-color: transparent;
-  border: 1px solid white;
+.admin-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-y: auto;
+  background: #148cff;
+  box-sizing: border-box;
 }
 
-.btn-outline-light:hover {
-  background-color: black !important;
-  color: white !important;
+/* Custom Scrollbar */
+.admin-dashboard-container::-webkit-scrollbar {
+  width: 12px;
+}
+.admin-dashboard-container::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 6px;
+}
+.admin-dashboard-container::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+}
+
+/* Header */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 24px;
+  padding: 0 32px;
+  min-height: 72px;
+}
+
+.admin-logo {
+  height: 48px;
+  margin-right: 20px;
+}
+
+.admin-header h1 {
+  font-size: 2.1rem;
+  color: #fff;
+  font-weight: bold;
+  margin-right: auto;
+}
+
+.admin-profile-icon {
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  margin-left: 20px;
+  transition: color 0.2s;
+}
+.admin-profile-icon:hover {
+  color: #7be6ee;
+}
+
+/* Profile Dropdown */
+.admin-profile-dropdown {
+  position: absolute;
+  top: 80px;
+  right: 42px;
+  background: rgba(44,60,100,0.96);
+  border-radius: 16px;
+  box-shadow: 0 7px 32px rgba(0,0,0,0.13);
+  padding: 24px 20px 15px 20px;
+  min-width: 260px;
+  color: #e8eefe;
+  border: 1px solid #244169;
+  z-index: 100;
+}
+.admin-profile-dropdown input {
+  width: 100%;
+  margin: 7px 0 0 0;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background: rgba(200,220,255,0.14);
+  color: #fff;
+}
+
+/* Profile Info */
+.admin-profile-info p {
+  margin: 3px 0;
+}
+
+/* Profile Buttons */
+.admin-profile-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 9px;
+}
+.admin-btn-primary {
+  background-color: #60a5fa;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
   cursor: pointer;
 }
+.admin-btn-primary:hover { background-color: #2563eb; }
+.admin-btn-success {
+  background-color: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.admin-btn-success:hover { background-color: #16a34a; }
+.admin-btn-danger {
+  background-color: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.admin-btn-danger:hover { background-color: #b91c1c; }
+.admin-btn-outline-light {
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 600;
+  margin-right: 10px;
+  transition: background 0.22s, color 0.22s;
+}
+.admin-btn-outline-light:hover { background: #fff; color: #2563eb; }
 
-.chart-wrapper h3 {
-  background-color: transparent !important;
-  color: white !important;
-  margin-bottom: 12px;
-  font-size: 1.2rem;
+/* Dashboard Grid */
+.admin-dashboard-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 36px;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 22px auto 0 auto;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* Individual Card */
+.admin-dashboard-card {
+  min-width: 260px;
+  max-width: 340px;
+  flex: 0 1 320px;
+  background: rgba(255,255,255,0.16);
+  color: #181818;
+  padding: 30px 18px;
+  border-radius: 15px;
   text-align: center;
+  box-shadow: 0 5px 14px rgba(0,0,0,0.13);
+  cursor: pointer;
+  margin: 0;
+  transition: transform 0.23s, box-shadow 0.23s;
+}
+.admin-dashboard-card:hover {
+  transform: translateY(-5px) scale(1.035);
+  box-shadow: 0 12px 32px rgba(40,40,70,0.21);
+}
+.admin-card-icon {
+  font-size: 2.3rem;
+  margin-bottom: 10px;
+}
+
+/* Form Select (dropdown) */
+.admin-form-select {
+  background: rgba(255,255,255,0.12);
+  color: #121;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 9px;
+  margin-top: 8px;
+  font-size: 1rem;
+  width: 180px;
+}
+.admin-form-select option {
+  background: #fff;
+  color: #2e2e2e;
+}
+
+/* Chart Container */
+.admin-charts-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 32px 16px 18px 16px;
+  min-height: 420px;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+/* Chart Rows */
+.admin-charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 36px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 26px;
+}
+.admin-charts-row.single { justify-content: center; }
+
+/* Chart Wrapper */
+.admin-chart-wrapper {
+  background: rgba(255,255,255,0.16);
+  padding: 22px 16px;
+  border-radius: 17px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.17);
+  min-width: 320px;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+.admin-chart-wrapper h3 {
+  color: #131c33;
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 14px;
+}
+
+/* Footer */
+.admin-dashboard-footer {
+  position: relative;
+  margin-top: auto;
+  padding: 18px;
+  text-align: center;
+  background: #111c3f;
+  color: #e3e3e3;
+  width: 100%;
+}
+
+/* Recharts Tooltip */
+.recharts-tooltip-wrapper {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #000 !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.23);
+}
+.recharts-default-tooltip {
+  background-color: rgba(255,255,255,0.98) !important;
+  border: none !important;
+  color: #111 !important;
+  font-weight: 500 !important;
 }
