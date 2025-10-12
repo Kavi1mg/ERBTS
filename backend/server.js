@@ -11,7 +11,7 @@ app.use(cors());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'KAVI@123mg',
+  password: '',
   database: 'erbts'
 });
 
@@ -482,6 +482,7 @@ app.post('/api/borrow_requests', (req, res) => {
 // Approve borrow request
 app.put("/api/borrow_requests/:id/approve", (req, res) => {
   const requestId = req.params.id;
+  const { due_date } = req.body;
 
   db.query(
     "SELECT * FROM borrow_requests WHERE id = ? AND status='pending'",
@@ -502,8 +503,8 @@ app.put("/api/borrow_requests/:id/approve", (req, res) => {
             return res.status(400).json({ message: "Not enough resources to approve" });
 
           db.query(
-            "UPDATE borrow_requests SET status='approved', updatedAt=NOW() WHERE id=?",
-            [requestId],
+            "UPDATE borrow_requests SET status='approved', due_date=?, updatedAt=NOW() WHERE id=?",
+            [due_date, requestId],
             (err3) => {
               if (err3) return res.status(500).json({ error: err3 });
 
