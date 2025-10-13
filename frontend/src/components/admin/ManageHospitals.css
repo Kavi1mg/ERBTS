@@ -1,89 +1,78 @@
-.manage-hospitals-page {
-  width: 100vw;
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #0062ff, #00d4ff); /* hospital-style gradient */
-  color: #fff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-y: auto;
+.manage-hospitals-container {
+  width: 90%;
+  margin: 50px auto;
+  background: linear-gradient(135deg, #009dff, #004fff);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
-/* Scrollbar */
-.manage-hospitals-page::-webkit-scrollbar {
-  width: 12px;
-}
-.manage-hospitals-page::-webkit-scrollbar-thumb {
-  background: #2563eb;
-  border-radius: 6px;
-}
-.manage-hospitals-page::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.1);
-  border-radius: 6px;
+.manage-hospitals-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
-/* Header */
-.page-header { display: flex; align-items: center; margin-bottom: 20px; }
-.page-header h1 { flex: 1; font-size: 2rem; text-align: center; }
-.back-icon { font-size: 2rem; cursor: pointer; color: #60a5fa; }
-.back-icon:hover { transform: scale(1.2); color: #2563eb; }
-
-/* Table */
-.table-wrapper {
-  overflow-x: auto;
-  max-height: calc(100vh - 150px);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-}
-
-.hospitals-table {
+/* Table Container */
+.hospital-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  min-width: 900px;
+  border-collapse: collapse;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.hospitals-table thead {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 5;
+/* Table Header */
+.hospital-table thead {
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
-.hospitals-table th, .hospitals-table td { padding: 12px 15px; text-align: center; }
-
-.hospitals-table tbody tr {
-  background: rgba(255,255,255,0.1);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.hospitals-table tbody tr:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateX(5px);
+.hospital-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.hospitals-table button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #60a5fa;
-  color: #fff;
-  transition: all 0.3s ease;
+/* Table Body */
+.hospital-table td {
+  padding: 12px 16px;
+  color: #f8f9fa;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 15px;
 }
-.hospitals-table button:hover { background: #2563eb; }
 
-.manage-hospitals-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+/* Row hover effect */
+.hospital-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: background 0.3s ease;
+}
+
+/* Scroll if data is large */
+.hospital-table-container {
+  max-height: 450px;
   overflow-y: auto;
-  background-color: #0b0b0b;
 }
 
-.table-wrapper {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 20px;
-  max-height: calc(100vh - 120px); /* adjust if header/footer heights change */
+/* Responsive */
+@media (max-width: 900px) {
+  .hospital-table th,
+  .hospital-table td {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .manage-hospitals-container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .manage-hospitals-container h2 {
+    font-size: 22px;
+  }
 }

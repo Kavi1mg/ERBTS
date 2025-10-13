@@ -11,7 +11,7 @@ app.use(cors());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'KAVI@123mg',
   database: 'erbts'
 });
 
@@ -126,6 +126,30 @@ app.post("/register", (req, res) => {
 });
 
 
+// Get all hospital details (excluding password)
+app.get("/api/hospitals/details", (req, res) => {
+  const query = `
+    SELECT 
+      hospitalId, 
+      name, 
+      address, 
+      pincode, 
+      email, 
+      phone_number, 
+      district, 
+      state 
+    FROM hospital;
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching hospital details:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.json(results);
+  });
+});
 
 // RESOURCE MANAGEMENT
 
