@@ -25,13 +25,10 @@ function AdminDashboard() {
   const [hospitals, setHospitals] = useState([]);
   const [selectedHospital, setSelectedHospital] = useState("");
   const [showHospitalDropdown, setShowHospitalDropdown] = useState(false);
-
-  // Data states
   const [resources, setResources] = useState([]);
   const [borrowRequests, setBorrowRequests] = useState([]);
   const [incomingRequests, setIncomingRequests] = useState([]);
 
-  // Static data for demo
   const hospitalRegistrations = [
     { month: "Jan", hospitals: 3 },
     { month: "Feb", hospitals: 7 },
@@ -75,98 +72,91 @@ function AdminDashboard() {
     setShowProfile(false);
   };
 
-  // Calculate request status counts for pie chart (Incoming requests)
   const approvedCount = incomingRequests.filter(r => r.status === "approved").length;
   const pendingCount = incomingRequests.filter(r => r.status === "pending").length;
   const rejectedCount = incomingRequests.filter(r => r.status === "rejected").length;
-
   const pieDataRequests = [
     { name: "Approved", value: approvedCount },
     { name: "Pending", value: pendingCount },
     { name: "Rejected", value: rejectedCount },
   ];
 
-  // Requests per hospital (stacked bar) - from borrowRequests
   const approvedReq = borrowRequests.filter(r => r.status === "approved").length;
   const pendingReq = borrowRequests.filter(r => r.status === "pending").length;
   const rejectedReq = borrowRequests.filter(r => r.status === "rejected").length;
-
   const hospitalName = hospitals.find(h => h.id === selectedHospital)?.name || "Hospital";
-
   const stackedBarData = [
     { hospital: hospitalName, Approved: approvedReq, Pending: pendingReq, Rejected: rejectedReq },
   ];
 
-  // Resource usage (used = total_quantity - available)
-  const totalQuantity = resources.reduce((sum, r) => sum + (r.total_quantity || 0), 0);
-  const totalAvailable = resources.reduce((sum, r) => sum + (r.available || 0), 0);
+  const totalQuantity = resources.reduce((sum, r) => sum + Number(r.total_quantity || 0), 0);
+  const totalAvailable = resources.reduce((sum, r) => sum + Number(r.available || 0), 0);
   const usedQuantity = totalQuantity - totalAvailable;
-
   const resourceUsageData = [{ hospital: hospitalName, used: usedQuantity >= 0 ? usedQuantity : 0 }];
-
   const donutData = [
-    { name: "Available", value: totalAvailable },
-    { name: "Used", value: usedQuantity >= 0 ? usedQuantity : 0 },
+    { name: "Available", value: Number(totalAvailable) },
+    { name: "Used", value: Number(usedQuantity >= 0 ? usedQuantity : 0) }
   ];
 
-  // Chart colors
   const pieColors = ["#BA55D3", "#FFD700", "#FF6347"];
   const stackedColors = ["#1E90FF", "#32CD32", "#FF1493"];
+  const numberLabel = ({ value }) => String(Number(value)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   return (
     <div className="admin-dashboard-container">
       <div className="admin-header">
         <img src={logo} alt="Logo" className="admin-logo" />
-        <h1>Admin Dashboard</h1>
-        <div className="admin-profile-icon" onClick={() => setShowProfile(!showProfile)}>👤</div>
-
-        {showProfile && (
-          <div className="admin-profile-dropdown">
-            {!isEditing ? (
-              <>
-                <div className="admin-profile-info">
-                  <p><strong>ID:</strong> {profile.id}</p>
-                  <p><strong>Name:</strong> {profile.name}</p>
-                  <p><strong>Email:</strong> {profile.email}</p>
-                  <p><strong>Phone:</strong> {profile.phone_number}</p>
-                  <p><strong>Role:</strong> {profile.role}</p>
+        <h1 className="admin-header-title">Admin Dashboard</h1>
+        <div className="admin-profile-section">
+          <div className="admin-profile-icon" onClick={() => setShowProfile(!showProfile)}>👤</div>
+          {showProfile && (
+            <div className="admin-profile-dropdown">
+              {!isEditing ? (
+                <>
+                  <div className="admin-profile-info">
+                    <p><strong>ID:</strong> {profile.id}</p>
+                    <p><strong>Name:</strong> {profile.name}</p>
+                    <p><strong>Email:</strong> {profile.email}</p>
+                    <p><strong>Phone:</strong> {profile.phone_number}</p>
+                    <p><strong>Role:</strong> {profile.role}</p>
+                  </div>
+                  <div className="admin-profile-buttons">
+                    <button className="admin-btn-primary btn-sm" onClick={() => setIsEditing(true)}>Edit</button>
+                    <button className="admin-btn-danger btn-sm" onClick={handleLogout}>Logout</button>
+                  </div>
+                </>
+              ) : (
+                <div className="admin-profile-edit-card">
+                  <h3>Edit Profile</h3>
+                  <input
+                    type="text"
+                    value={profile.name}
+                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                    placeholder="Name"
+                  />
+                  <input
+                    type="email"
+                    value={profile.email}
+                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                    placeholder="Email"
+                  />
+                  <input
+                    type="text"
+                    value={profile.phone_number}
+                    onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
+                    placeholder="Phone"
+                  />
+                  <div className="admin-profile-buttons">
+                    <button className="admin-btn-success btn-sm" onClick={handleSave}>Save</button>
+                    <button className="admin-btn-danger btn-sm" onClick={() => setIsEditing(false)}>Cancel</button>
+                  </div>
                 </div>
-                <div className="admin-profile-buttons">
-                  <button className="admin-btn-primary btn-sm" onClick={() => setIsEditing(true)}>Edit</button>
-                  <button className="admin-btn-danger btn-sm" onClick={handleLogout}>Logout</button>
-                </div>
-              </>
-            ) : (
-              <div className="admin-profile-edit-card">
-                <h3>Edit Profile</h3>
-                <input
-                  type="text"
-                  value={profile.name}
-                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                  placeholder="Name"
-                />
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  placeholder="Email"
-                />
-                <input
-                  type="text"
-                  value={profile.phone_number}
-                  onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
-                  placeholder="Phone"
-                />
-                <div className="admin-profile-buttons">
-                  <button className="admin-btn-success btn-sm" onClick={handleSave}>Save</button>
-                  <button className="admin-btn-danger btn-sm" onClick={() => setIsEditing(false)}>Cancel</button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
       </div>
-
+      {/* All other admin dashboard content stays exactly as you had */}
       <div className="admin-dashboard-grid">
         <div className="admin-dashboard-card" onClick={() => navigate("/manage-hospitals")}>
           <div className="card-body d-flex flex-column align-items-center justify-content-center">
@@ -174,12 +164,10 @@ function AdminDashboard() {
             <h5 className="card-title mt-2">Manage Hospitals</h5>
           </div>
         </div>
-
         <div style={{ marginTop: 15, width: "200px" }}>
           <button className="admin-btn-outline-light" onClick={() => setShowHospitalDropdown(!showHospitalDropdown)}>
             Hospitals
           </button>
-
           {showHospitalDropdown && (
             <select
               className="admin-form-select mt-2"
@@ -194,7 +182,6 @@ function AdminDashboard() {
           )}
         </div>
       </div>
-
       <div className="admin-charts-container">
         <div className="admin-charts-row">
           <div className="admin-chart-wrapper">
@@ -207,7 +194,6 @@ function AdminDashboard() {
               <Bar dataKey="hospitals" fill="#FF4500" />
             </BarChart>
           </div>
-
           <div className="admin-chart-wrapper">
             <h3>Requests Status (Incoming)</h3>
             <PieChart width={400} height={300}>
@@ -218,7 +204,7 @@ function AdminDashboard() {
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
-                label={{ fill: "#fff" }}
+                label={numberLabel}
                 isAnimationActive={false}
               >
                 {pieDataRequests.map((entry, index) => (
@@ -230,7 +216,6 @@ function AdminDashboard() {
             </PieChart>
           </div>
         </div>
-
         <div className="admin-charts-row">
           <div className="admin-chart-wrapper">
             <h3>Requests per Hospital (Borrowed)</h3>
@@ -244,7 +229,6 @@ function AdminDashboard() {
               <Bar dataKey="Rejected" stackId="a" fill={stackedColors[2]} />
             </BarChart>
           </div>
-
           <div className="admin-chart-wrapper">
             <h3>Resource Usage per Hospital</h3>
             <BarChart width={400} height={300} data={resourceUsageData}>
@@ -255,7 +239,6 @@ function AdminDashboard() {
             </BarChart>
           </div>
         </div>
-
         <div className="admin-charts-row single">
           <div className="admin-chart-wrapper">
             <h3>Resource Availability</h3>
@@ -268,7 +251,7 @@ function AdminDashboard() {
                 cy="50%"
                 innerRadius={50}
                 outerRadius={80}
-                label={{ fill: "#fff" }}
+                label={numberLabel}
                 isAnimationActive={false}
               >
                 {donutData.map((entry, index) => (
@@ -280,7 +263,6 @@ function AdminDashboard() {
           </div>
         </div>
       </div>
-
       <footer className="admin-dashboard-footer">
         <p>© ERBTS</p>
       </footer>

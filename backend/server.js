@@ -1,4 +1,4 @@
- 
+
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -11,7 +11,7 @@ app.use(cors());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'KAVI@123mg',
+  password: '',
   database: 'erbts'
 });
 
@@ -340,10 +340,10 @@ app.get('/api/nearby-hospitals-map/:hospitalId', (req, res) => {
             // lat: center.lat + 0.01 * (i + 1),
             // lng: center.lng + 0.01 * (i + 1)
             lat: center.lat + 0.001 * (i + 1),
-lng: center.lng + 0.001 * (i + 1)
+            lng: center.lng + 0.001 * (i + 1)
 
           }));
-           console.log("🟢 District:", district);
+          console.log("🟢 District:", district);
           console.log("🗺️ Center:", center);
           console.log("🏥 Nearby Hospitals (with offset):", hospitalsWithOffset);
           res.json({
